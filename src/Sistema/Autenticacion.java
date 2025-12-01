@@ -19,7 +19,6 @@ public class Autenticacion {
 
     /**
      * Encripta la contraseña original aplicando sustituciones de caracteres.
-     * IMPORTANTE: Este método NO es seguro, pero es válido para un proyecto POO.
      *
      * @param contraseñaOriginal Contraseña ingresada por el usuario.
      * @return Cadena encriptada mediante sustitución de caracteres.
