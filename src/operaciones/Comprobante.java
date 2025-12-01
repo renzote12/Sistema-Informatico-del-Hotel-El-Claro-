@@ -8,25 +8,18 @@ import java.time.LocalDateTime;
  * Contiene información del huésped, habitación y montos cobrados.
  */
 public class Comprobante {
-
     // Fecha y hora en que se genera el comprobante (momento del check-out)
     private LocalDateTime fecha;
-
     // Huésped que realizó la estancia
     private Huesped huesped;
-
     // Habitación que ocupó el huésped
     private Habitacion habitacion;
-
     // Monto cobrado por el uso de la habitación
     private double montoHabitacion;
-
     // Monto total de servicios adicionales consumidos
     private double montoServicios;
-
     // Suma del monto de habitación + servicios
     private double montoTotal;
-
     /**
      * Constructor principal del comprobante.
      */

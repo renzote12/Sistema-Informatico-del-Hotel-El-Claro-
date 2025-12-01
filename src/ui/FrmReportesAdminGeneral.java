@@ -1,4 +1,4 @@
-// Importaciones necesarias
+package ui;
 import javax.swing.table.DefaultTableModel;
 import java.time.LocalDate;        // Para manejar fechas
 import java.time.ZoneId;          // Convertir DateTime a LocalDate
