@@ -1,39 +1,41 @@
-
 package ui;
 
-
-
 import Sistema.SistemaPrincipal;
-import java.util.List;
-import java.util.Date;
 import javax.swing.*;
 
-import rrhh.Empleado;
-import rrhh.Recepcionista;
-
-import hotel.Habitacion;
-import hotel.Hotel;
-import hotel.TipoHabitacion;
-import operaciones.Comprobante;
-
-
-
+/**
+ * Pantalla principal del Administrador General.
+ * Permite gestionar empleados y generar reportes.
+ */
 public class MenuAdminGeneral extends JFrame {
-    
-   private List<Empleado> empleados;
 
-    // Constructor vacío
- public MenuAdminGeneral() {
+    /**
+     * Constructor principal del menú.
+     * Inicializa interfaz y ventana.
+     */
+    public MenuAdminGeneral() {
         initComponents();
         configurarVentana();
     }
-     
 
+    /**
+     * Configura parámetros de la ventana.
+     */
     private void configurarVentana() {
         setTitle("Menú - Administrador General");
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+
+    /**
+     * Carga un panel dentro del contenedor central.
+     */
+    private void cargarPanel(javax.swing.JPanel panel) {
+        panelContenido.removeAll();
+        panelContenido.add(panel, java.awt.BorderLayout.CENTER);
+        panelContenido.revalidate();
+        panelContenido.repaint();
     }
     
 
@@ -143,19 +145,21 @@ public class MenuAdminGeneral extends JFrame {
 
     private void btnEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEmpleadosActionPerformed
    
-
+    // Abrir panel de gestión de empleados
     FrmGestionEmpleados panel = new FrmGestionEmpleados(SistemaPrincipal.empleados);
     cargarPanel(panel);
     }//GEN-LAST:event_btnEmpleadosActionPerformed
 
     private void btnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReportesActionPerformed
-     FrmReportesAdminGeneral panel = new FrmReportesAdminGeneral();
+         // Abrir panel de reportes
+        FrmReportesAdminGeneral panel = new FrmReportesAdminGeneral();
     cargarPanel(panel);    
 
 // TODO add your handling code here:
     }//GEN-LAST:event_btnReportesActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
+        // Confirmar antes de salir
         int opcion = JOptionPane.showConfirmDialog(
             this,
             "¿Deseas salir del sistema?",
@@ -168,20 +172,11 @@ public class MenuAdminGeneral extends JFrame {
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
-       new LoginFrame().setVisible(true);
+     // Cerrar sesión
+        new LoginFrame().setVisible(true);
        this.dispose();
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
-    
-   private void cargarPanel(javax.swing.JPanel panel) {
-        panelContenido.removeAll();
-        panelContenido.add(panel, java.awt.BorderLayout.CENTER);
-        panelContenido.revalidate();
-        panelContenido.repaint();
-    }
-
-
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;

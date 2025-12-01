@@ -1,41 +1,45 @@
+package ui; // Indica que esta clase pertenece al paquete ui
 
-package ui;
-import operaciones.Huesped;
-import hotel.Hotel;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
+import operaciones.Huesped; // Importa la clase Huesped
+import hotel.Hotel; // Importa la clase Hotel, donde están las listas globales
+import javax.swing.JOptionPane; // Para mostrar mensajes emergentes
+import javax.swing.table.DefaultTableModel; // Para manejar tablas en Swing
 
+// Clase que gestiona la CRUD (crear, leer, modificar, eliminar) de huéspedes
 public class FrmGestionHuespedes extends javax.swing.JPanel {
 
- 
-     public FrmGestionHuespedes() {
-        initComponents();
-        cargarTabla();
+    // Constructor del panel
+    public FrmGestionHuespedes() {
+        initComponents(); // Inicializa los componentes gráficos (autogenerado por NetBeans)
+        cargarTabla(); // Carga la tabla con los huéspedes existentes
     }
 
+    // Método para llenar la tabla con los datos de huéspedes
     private void cargarTabla() {
-        DefaultTableModel modelo = (DefaultTableModel) tblHuespedes.getModel();
-        modelo.setRowCount(0);
+        DefaultTableModel modelo = (DefaultTableModel) tblHuespedes.getModel(); // Obtiene el modelo de la tabla
+        modelo.setRowCount(0); // Limpia filas previas
 
+        // Recorre la lista global de huéspedes almacenada en Hotel
         for (Huesped h : Hotel.listaHuespedes) {
             modelo.addRow(new Object[]{
-                h.getDni(),
-                h.getNombres(),
-                h.getApellidos(),
-                h.getTelefono(),
-                h.getCorreo(),
-                h.getLugarResidencia()
+                h.getDni(),              // DNI
+                h.getNombres(),         // Nombres
+                h.getApellidos(),       // Apellidos
+                h.getTelefono(),        // Teléfono
+                h.getCorreo(),          // Correo
+                h.getLugarResidencia()  // Lugar de residencia
             });
         }
     }
 
+    // Método para limpiar los campos de texto
     private void limpiar() {
-        txtDNI.setText("");
-        txtNombres.setText("");
-        txtApellidos.setText("");
-        txtTelefono.setText("");
-        txtCorreo.setText("");
-        txtLugar.setText("");
+        txtDNI.setText(""); // Limpia DNI
+        txtNombres.setText(""); // Limpia nombres
+        txtApellidos.setText(""); // Limpia apellidos
+        txtTelefono.setText(""); // Limpia teléfono
+        txtCorreo.setText(""); // Limpia correo
+        txtLugar.setText(""); // Limpia lugar
     }
 
 
@@ -204,7 +208,8 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-     try {
+    try {
+            // Captura valores ingresados
             String dni = txtDNI.getText().trim();
             String nom = txtNombres.getText().trim();
             String ape = txtApellidos.getText().trim();
@@ -212,12 +217,13 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
             String cor = txtCorreo.getText().trim();
             String lug = txtLugar.getText().trim();
 
+            // Validación básica
             if (dni.isEmpty() || nom.isEmpty() || ape.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Complete DNI, nombres y apellidos.");
                 return;
             }
 
-            // Validar DNI repetido
+            // Validar duplicado por DNI
             for (Huesped h : Hotel.listaHuespedes) {
                 if (h.getDni().equals(dni)) {
                     JOptionPane.showMessageDialog(this, "Ya existe un huésped con ese DNI.");
@@ -225,20 +231,21 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
                 }
             }
 
+            // Crear huésped
             Huesped nuevo = new Huesped(dni, nom, ape, tel, cor, lug);
-            Hotel.listaHuespedes.add(nuevo);
+            Hotel.listaHuespedes.add(nuevo); // Agregar a la lista global
 
-            JOptionPane.showMessageDialog(this, "Huésped registrado.");
-            cargarTabla();
-            limpiar();
+            JOptionPane.showMessageDialog(this, "Huésped registrado."); // Mensaje OK
+            cargarTabla(); // Refresca tabla
+            limpiar(); // Limpia campos
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al registrar.");
-        }        // TODO add your handling code here:
+        }
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-     String dni = txtDNI.getText().trim();
+    String dni = txtDNI.getText().trim(); // Obtiene DNI a modificar
 
         if (dni.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Ingrese DNI para modificar.");
@@ -247,6 +254,7 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
 
         Huesped h = null;
 
+        // Busca huésped por DNI
         for (Huesped x : Hotel.listaHuespedes) {
             if (x.getDni().equals(dni)) {
                 h = x;
@@ -259,6 +267,7 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
             return;
         }
 
+        // Modifica datos
         h.setNombres(txtNombres.getText().trim());
         h.setApellidos(txtApellidos.getText().trim());
         h.setTelefono(txtTelefono.getText().trim());
@@ -266,12 +275,12 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
         h.setLugarResidencia(txtLugar.getText().trim());
 
         JOptionPane.showMessageDialog(this, "Datos modificados.");
-        cargarTabla();
-        limpiar();        // TODO add your handling code here:
+        cargarTabla(); // Refresca tabla
+        limpiar(); // Limpia formulario   // TODO add your handling code here:
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-       String dni = txtDNI.getText().trim();
+        String dni = txtDNI.getText().trim(); // DNI ingresado
 
         if (dni.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Ingrese DNI para eliminar.");
@@ -280,6 +289,7 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
 
         int index = -1;
 
+        // Buscar índice del huésped
         for (int i = 0; i < Hotel.listaHuespedes.size(); i++) {
             if (Hotel.listaHuespedes.get(i).getDni().equals(dni)) {
                 index = i;
@@ -287,16 +297,18 @@ public class FrmGestionHuespedes extends javax.swing.JPanel {
             }
         }
 
+        // DNI no encontrado
         if (index == -1) {
             JOptionPane.showMessageDialog(this, "No existe huésped con ese DNI.");
             return;
         }
 
+        // Eliminar huésped
         Hotel.listaHuespedes.remove(index);
 
         JOptionPane.showMessageDialog(this, "Huésped eliminado.");
-        cargarTabla();
-        limpiar();        // TODO add your handling code here:
+        cargarTabla(); // Actualiza tabla
+        limpiar(); // Limpia campos      
     }//GEN-LAST:event_btnEliminarActionPerformed
 
 

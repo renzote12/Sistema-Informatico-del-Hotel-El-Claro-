@@ -1,34 +1,39 @@
 
-package ui;
+package ui; // Paquete donde se encuentra la ventana
 
 import java.util.List;
 import javax.swing.*;
-import rrhh.*;
-import Sistema.Autenticacion;
-import hotel.*;
+import rrhh.*;                    // Importa clases de empleados
+import Sistema.Autenticacion;    // Para encriptar contraseñas
+import hotel.*;                  // (No se usa todo, pero puede ser necesario)
 import javax.swing.table.DefaultTableModel;
 import operaciones.*;
-import rrhh.Empleado;
+
+// Esta clase gestiona empleados: creación, modificación, eliminación
 public class FrmGestionEmpleados extends javax.swing.JPanel {
 
-  private List<Empleado> empleados;
+    private List<Empleado> empleados; // Lista externa recibida desde la ventana principal
 
+    // Constructor: recibe la lista de empleados
     public FrmGestionEmpleados(List<Empleado> empleados) {
-        initComponents();
+        initComponents();   // Carga la interfaz visual generada por NetBeans
         this.empleados = empleados;
-   
-        cargarTabla();
-        
-    } 
 
-    // ==========================================
-    // ============ CARGAR TABLA =================
-    // ==========================================
+        cargarTabla();      // Muestra los empleados actuales en la tabla
+    }
+
+
+    // ======================================================
+    // =============== MÉTODO: CARGA LA TABLA ===============
+    // ======================================================
     private void cargarTabla() {
+
+        // Define columnas y modelo para la tabla
         DefaultTableModel modelo = new DefaultTableModel(
             new Object[]{"DNI", "Nombre", "Apellido", "Rol", "Usuario", "Estado"}, 0
         );
 
+        // Recorre todos los empleados y los agrega como filas
         for (Empleado e : empleados) {
             if (e != null) {
                 modelo.addRow(new Object[]{
@@ -42,82 +47,75 @@ public class FrmGestionEmpleados extends javax.swing.JPanel {
             }
         }
 
-        jTable1.setModel(modelo);
-    }
-    
-    
-    // ==========================================
-    // ============ OBTENER DATOS ===============
-    // ==========================================
-private Empleado obtenerEmpleadoDesdeFormulario() {
-
-    String dni = txtDni.getText();
-    String nombre = txtNombre.getText();
-    String apellido = txtApellido.getText();
-    String usuario = txtUsuario.getText();
-    String contrasena = String.valueOf(txtContrasena.getPassword());
-    String rol = comboRol.getSelectedItem().toString();
-
-    String estado = rbActivo.isSelected() ? "Activo" : "Inactivo";
-
-    if (dni.length() == 0 || nombre.length() == 0 || apellido.length() == 0
-            || usuario.length() == 0 || contrasena.length() == 0) {
-        JOptionPane.showMessageDialog(this, "Completa todos los campos.");
-        return null;
+        jTable1.setModel(modelo); // Asigna el modelo a la tabla
     }
 
-    Autenticacion auth = new Autenticacion();
-    String encriptada = auth.encriptar(contrasena);
 
+    // ======================================================
+    // ========== CREA OBJETO EMPLEADO DESDE FORM ===========
+    // ======================================================
+    private Empleado obtenerEmpleadoDesdeFormulario() {
 
-    // Crear empleado según el rol seleccionado
-    switch (rol) {
+        // Obtiene los valores que ingresó el usuario
+        String dni = txtDni.getText();
+        String nombre = txtNombre.getText();
+        String apellido = txtApellido.getText();
+        String usuario = txtUsuario.getText();
+        String contrasena = String.valueOf(txtContrasena.getPassword());
+        String rol = comboRol.getSelectedItem().toString();
 
-        case "Administrador General":
-            return new AdministradorGeneral(
-                    dni, nombre, apellido, usuario, encriptada, estado
-            );
+        // El estado depende del radio button seleccionado
+        String estado = rbActivo.isSelected() ? "Activo" : "Inactivo";
 
-        case "Administrador Secundario":
-            return new AdministradorSecundario(
-                    dni, nombre, apellido, usuario, encriptada, estado
-            );
-
-        case "Recepcionista":
-            return new Recepcionista(
-                    dni, nombre, apellido, usuario, encriptada, estado
-            );
-
-        default:
-            JOptionPane.showMessageDialog(this, "Rol no reconocido.");
+        // Validación: todos los campos deben estar llenos
+        if (dni.isEmpty() || nombre.isEmpty() || apellido.isEmpty()
+                || usuario.isEmpty() || contrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa todos los campos.");
             return null;
+        }
+
+        // Encripta la contraseña para almacenarla de forma segura
+        Autenticacion auth = new Autenticacion();
+        String encriptada = auth.encriptar(contrasena);
+
+        // Crea el objeto correcto según el rol escogido
+        switch (rol) {
+
+            case "Administrador General":
+                return new AdministradorGeneral(dni, nombre, apellido, usuario, encriptada, estado);
+
+            case "Administrador Secundario":
+                return new AdministradorSecundario(dni, nombre, apellido, usuario, encriptada, estado);
+
+            case "Recepcionista":
+                return new Recepcionista(dni, nombre, apellido, usuario, encriptada, estado);
+
+            default:
+                JOptionPane.showMessageDialog(this, "Rol no reconocido.");
+                return null;
+        }
     }
-}
-private void limpiarCampos() {
-    txtDni.setText("");
-    txtNombre.setText("");
-    txtApellido.setText("");
-    txtUsuario.setText("");
-    txtContrasena.setText("");
-    comboRol.setSelectedIndex(0);
-    rbActivo.setSelected(true);
-    rbInactivo.setSelected(false);
 
-    txtDni.requestFocus(); 
 
-    
-}
+    // ======================================================
+    // =============== LIMPIAR CAMPOS DEL FORM ==============
+    // ======================================================
+    private void limpiarCampos() {
 
-    // ==========================================
-    // ============ ELIMINAR EMPLEADO ============
-    // ==========================================
-    // ==========================================
-    // ============ MODIFICAR EMPLEADO ===========
-    // ==========================================
-    // ==========================================
-    // ============ CREAR EMPLEADO ==============
-    // ==========================================
-    
+        txtDni.setText("");
+        txtNombre.setText("");
+        txtApellido.setText("");
+        txtUsuario.setText("");
+        txtContrasena.setText("");
+
+        // Se deja el primer rol seleccionado
+        comboRol.setSelectedIndex(0);
+
+        // Estado vuelve a "Activo"
+        rbActivo.setSelected(true);
+
+        txtDni.requestFocus(); // Enfoca el primer campo
+    }
 
     @SuppressWarnings("unchecked")
 
@@ -355,93 +353,106 @@ private void limpiarCampos() {
     }//GEN-LAST:event_rbInactivoActionPerformed
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-             Empleado nuevo = obtenerEmpleadoDesdeFormulario();
-    if (nuevo == null) return;
+             // Construye el objeto empleado con los datos ingresados
+        Empleado nuevo = obtenerEmpleadoDesdeFormulario();
+        if (nuevo == null) return;
 
-    // Validar usuario duplicado
-    for (Empleado e : empleados) {
-        if (e != null && e.getUsuario().equals(nuevo.getUsuario())) {
-            JOptionPane.showMessageDialog(this, "El usuario ya existe.");
-            return;
+        // Validación: evitar usuario duplicado
+        for (Empleado e : empleados) {
+            if (e != null && e.getUsuario().equals(nuevo.getUsuario())) {
+                JOptionPane.showMessageDialog(this, "El usuario ya existe.");
+                return;
+            }
         }
-    }
 
-    empleados.add(nuevo);
-    cargarTabla();
-    JOptionPane.showMessageDialog(this, "Empleado creado con éxito.");
-     limpiarCampos();
+        // Agregar nuevo empleado a la lista
+        empleados.add(nuevo);
+
+        cargarTabla();
+        JOptionPane.showMessageDialog(this, "Empleado creado con éxito.");
+
+        limpiarCampos();
+    
+
     }//GEN-LAST:event_btnCrearActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-           int fila = jTable1.getSelectedRow();
-    if (fila == -1) {
-        JOptionPane.showMessageDialog(this, "Selecciona un empleado para eliminar.");
-        return;
-    }
+         int fila = jTable1.getSelectedRow(); // Fila seleccionada
 
-    String usuarioSeleccionado = jTable1.getValueAt(fila, 4).toString();
-
-    for (int i = 0; i < empleados.size(); i++) {
-        Empleado e = empleados.get(i);
-
-        if (e != null && e.getUsuario().equals(usuarioSeleccionado)) {
-
-            // Bloquear admin por defecto
-            if (e instanceof AdministradorGeneral && e.getUsuario().equals("admin")) {
-                JOptionPane.showMessageDialog(this, "No puedes eliminar al Administrador General por defecto.");
-                return;
-            }
-
-            empleados.remove(i);
-            cargarTabla();
-            JOptionPane.showMessageDialog(this, "Empleado eliminado.");
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un empleado para eliminar.");
             return;
         }
-    }
 
-         limpiarCampos();// TODO add your handling code here:
+        // Usuario del empleado seleccionado
+        String usuarioSeleccionado = jTable1.getValueAt(fila, 4).toString();
+
+        // Buscar el objeto empleado
+        for (int i = 0; i < empleados.size(); i++) {
+            Empleado e = empleados.get(i);
+
+            if (e != null && e.getUsuario().equals(usuarioSeleccionado)) {
+
+                // Protección: NO permitir borrar al administrador 'admin'
+                if (e instanceof AdministradorGeneral && e.getUsuario().equals("admin")) {
+                    JOptionPane.showMessageDialog(this,
+                        "No puedes eliminar al Administrador General por defecto.");
+                    return;
+                }
+
+                empleados.remove(i); // Eliminar
+                cargarTabla();
+                JOptionPane.showMessageDialog(this, "Empleado eliminado.");
+                limpiarCampos();
+                return;
+            }
+        }
+               
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        int fila = jTable1.getSelectedRow();
-    if (fila == -1) {
-        JOptionPane.showMessageDialog(this, "Selecciona un empleado para modificar.");
-        return;
-    }
+       int fila = jTable1.getSelectedRow();
 
-    String usuarioSeleccionado = jTable1.getValueAt(fila, 4).toString();
-
-    for (Empleado e : empleados) {
-
-        if (e != null && e.getUsuario().equals(usuarioSeleccionado)) {
-
-            // bloquear admin por defecto
-            if (e instanceof AdministradorGeneral && e.getUsuario().equals("admin")) {
-                JOptionPane.showMessageDialog(this, "No puedes modificar al Administrador General por defecto.");
-                return;
-            }
-
-            e.setNombres(txtNombre.getText());
-            e.setApellidos(txtApellido.getText());
-            e.setUsuario(txtUsuario.getText());
-            e.setRol(comboRol.getSelectedItem().toString());
-            e.setEstado(rbActivo.isSelected() ? "Activo" : "Inactivo");
-
-            String nuevaContra = String.valueOf(txtContrasena.getPassword());
-            if (nuevaContra.length() > 0) {
-                Autenticacion auth = new Autenticacion();
-                e.setContraseñaEncriptada(auth.encriptar(nuevaContra));
-            }
-
-            cargarTabla();
-            JOptionPane.showMessageDialog(this, "Empleado modificado.");
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un empleado para modificar.");
             return;
         }
-    }
-    
-        
 
-       limpiarCampos(); // TODO add your handling code here:
+        // Usuario del empleado que será modificado
+        String usuarioSeleccionado = jTable1.getValueAt(fila, 4).toString();
+
+        // Buscar objeto empleado
+        for (Empleado e : empleados) {
+
+            if (e != null && e.getUsuario().equals(usuarioSeleccionado)) {
+
+                // Protección: NO modificar al admin por defecto
+                if (e instanceof AdministradorGeneral && e.getUsuario().equals("admin")) {
+                    JOptionPane.showMessageDialog(this,
+                        "No puedes modificar al Administrador General por defecto.");
+                    return;
+                }
+
+                // Actualización de datos básicos
+                e.setNombres(txtNombre.getText());
+                e.setApellidos(txtApellido.getText());
+                e.setUsuario(txtUsuario.getText());
+                e.setRol(comboRol.getSelectedItem().toString());
+                e.setEstado(rbActivo.isSelected() ? "Activo" : "Inactivo");
+
+                // Actualizar contraseña solo si el usuario escribió algo
+                String nuevaContra = String.valueOf(txtContrasena.getPassword());
+                if (!nuevaContra.isEmpty()) {
+                    Autenticacion auth = new Autenticacion();
+                    e.setContraseñaEncriptada(auth.encriptar(nuevaContra));
+                }
+
+                cargarTabla();
+                JOptionPane.showMessageDialog(this, "Empleado modificado.");
+                limpiarCampos();
+                return;
+            }
+        }
     }//GEN-LAST:event_btnModificarActionPerformed
 
 

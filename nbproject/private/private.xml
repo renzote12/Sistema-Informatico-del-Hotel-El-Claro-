@@ -5,6 +5,34 @@
         <group>
             <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/Sistema/SistemaPrincipal.java</file>
             <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/Sistema/Autenticacion.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/hotel/Habitacion.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/hotel/Hotel.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/hotel/TipoHabitacion.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/Comprobante.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/ConsumoServicio.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/Estadia.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/GestorLogistico.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/Huesped.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/Informe.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/Reservacion.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/operaciones/ServicioAdicional.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/rrhh/AdministradorGeneral.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/rrhh/AdministradorSecundario.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/rrhh/Empleado.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/rrhh/Recepcionista.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/MenuRecepcionista.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/MenuAdminSecundario.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/MenuAdminGeneral.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/LoginFrame.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmReservaciones.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmReportesAdminGeneral.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmRegistrarConsumo.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmGestionServicios.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmGestionHuespedes.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmGestionHabitaciones.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmGestionEmpleados.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmCheckOut.java</file>
+            <file>file:/C:/Users/a3130/OneDrive/Documentos/NetBeansProjects/SistemaHotelElClaro/src/ui/FrmCheckIn.java</file>
         </group>
     </open-files>
 </project-private>

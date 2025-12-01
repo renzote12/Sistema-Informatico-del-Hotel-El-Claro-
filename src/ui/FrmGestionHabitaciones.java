@@ -1,107 +1,129 @@
+package ui; // Paquete donde está este formulario
 
-package ui;
+import hotel.TipoHabitacion; // Para trabajar con el tipo de habitación
+import hotel.Hotel;          // Lista global de habitaciones y tipos
+import javax.swing.table.DefaultTableModel; // Modelo de tabla
+import hotel.Habitacion;    // Clase principal de habitación
+import javax.swing.JOptionPane; // Para mostrar mensajes
 
-import hotel.TipoHabitacion;
-import hotel.Hotel;
-import javax.swing.table.DefaultTableModel;
-import hotel.Habitacion;
-import javax.swing.JOptionPane;
 public class FrmGestionHabitaciones extends javax.swing.JPanel {
 
-  
-  public FrmGestionHabitaciones() {
-     initComponents();
-     lblTotalEstandar = new javax.swing.JLabel("Estandar: 0");
-     lblTotalDeluxe = new javax.swing.JLabel("Deluxe: 0");
-     lblTotalSuite = new javax.swing.JLabel("Suite: 0");
+    // Constructor del panel
+    public FrmGestionHabitaciones() {
+        initComponents(); // Carga la interfaz creada por NetBeans
 
-     lblTotalEstandar.setFont(new java.awt.Font("Segoe UI", 0, 16));
-     lblTotalDeluxe.setFont(new java.awt.Font("Segoe UI", 0, 16));
-     lblTotalSuite.setFont(new java.awt.Font("Segoe UI", 0, 16));
-    cargarTipos();
-    cargarEstados();
-    cargarCamas();  // importante
-    cargarTabla();
-    actualizarResumenTipos();
+        // Etiquetas de resumen de habitaciones por tipo (se inicializan aquí)
+        lblTotalEstandar = new javax.swing.JLabel("Estandar: 0");
+        lblTotalDeluxe = new javax.swing.JLabel("Deluxe: 0");
+        lblTotalSuite = new javax.swing.JLabel("Suite: 0");
 
-    // cuando cambie el tipo de habitación, actualizar camas
-    cmbTipoHab.addActionListener(e -> cargarCamas());
+        // Fuente para los contadores
+        lblTotalEstandar.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        lblTotalDeluxe.setFont(new java.awt.Font("Segoe UI", 0, 16));
+        lblTotalSuite.setFont(new java.awt.Font("Segoe UI", 0, 16));
+
+        cargarTipos();      // Llena combo de tipos según listaTipos
+        cargarEstados();    // Carga los estados posibles
+        cargarCamas();      // Carga el combo de camas según el tipo
+        cargarTabla();      // Tabla de habitaciones registradas
+        actualizarResumenTipos(); // Muestra total por tipo
+
+        // Listener: cuando cambia el tipo, se actualiza combo de camas
+        cmbTipoHab.addActionListener(e -> cargarCamas());
     }
+
+    // ------------------------------
+    // CARGA DE COMBOS Y TABLA
+    // ------------------------------
+
     private void cargarTipos() {
-    cmbTipoHab.removeAllItems();
-    for (TipoHabitacion th : Hotel.listaTipos) {
-        cmbTipoHab.addItem(th.getNombre());
+        cmbTipoHab.removeAllItems(); // Limpia combo
+
+        for (TipoHabitacion th : Hotel.listaTipos) {
+            cmbTipoHab.addItem(th.getNombre()); // Añade cada tipo existente
+        }
     }
-}
+
     private void cargarCamas() {
-    cmbTipoCama.removeAllItems();
+        cmbTipoCama.removeAllItems(); // Limpia combo
 
-    String tipoSeleccionado = cmbTipoHab.getSelectedItem().toString();
+        // Obtiene el tipo seleccionado para saber qué camas permite
+        String tipoSeleccionado = cmbTipoHab.getSelectedItem().toString();
 
-    for (TipoHabitacion th : Hotel.listaTipos) {
-        if (th.getNombre().equals(tipoSeleccionado)) {
-            for (String cama : th.getTiposCamaPermitidos()) {
-                cmbTipoCama.addItem(cama);
+        for (TipoHabitacion th : Hotel.listaTipos) {
+            if (th.getNombre().equals(tipoSeleccionado)) {
+
+                // Añade solo las camas permitidas por ese tipo
+                for (String cama : th.getTiposCamaPermitidos()) {
+                    cmbTipoCama.addItem(cama);
+                }
+                break;
             }
-            break;
         }
     }
-}
-    
+
     private void cargarEstados() {
-    cmbEstado.removeAllItems();
-    cmbEstado.addItem("Disponible");
-    cmbEstado.addItem("Ocupada");
-    cmbEstado.addItem("En mantenimiento");
-}
-    
+        cmbEstado.removeAllItems(); // Limpia combo
+
+        cmbEstado.addItem("Disponible");
+        cmbEstado.addItem("Ocupada");
+        cmbEstado.addItem("En mantenimiento");
+    }
+
+    // Carga habitaciones registradas a la tabla
     private void cargarTabla() {
-    DefaultTableModel modelo = (DefaultTableModel) tblHabitaciones.getModel();
-    modelo.setRowCount(0);
+        DefaultTableModel modelo = (DefaultTableModel) tblHabitaciones.getModel();
+        modelo.setRowCount(0); // Vacía tabla previa
 
-    for (Habitacion h : Hotel.listaHabitaciones) {
-        modelo.addRow(new Object[]{
-            h.getNumeroHabitacion(),
-            h.getTipoHabitacion().getNombre(),
-            h.getTipoCama(),
-            h.getEstado(),
-            String.join(", ", h.getEntretenimiento() == null ? new String[]{} : h.getEntretenimiento())
-        });
-    }
-    }
-    private void limpiarCampos() {
-    txtNumero.setText("");
-    cmbTipoHab.setSelectedIndex(0);
-    cmbTipoCama.setSelectedIndex(0);
-    cmbEstado.setSelectedIndex(0);
-    txtEntretenimiento.setText("");
-}
-private void actualizarResumenTipos() {
+        for (Habitacion h : Hotel.listaHabitaciones) {
 
-    int estandar = 0;
-    int deluxe = 0;
-    int suite = 0;
+            // Maneja el entretenimiento como texto separado por comas
+            String entretenimiento = (h.getEntretenimiento() == null)
+                ? ""
+                : String.join(", ", h.getEntretenimiento());
 
-    for (Habitacion h : Hotel.listaHabitaciones) {
-        String tipo = h.getTipoHabitacion().getNombre();
-
-        switch (tipo) {
-            case "Estandar":
-                estandar++;
-                break;
-            case "Deluxe":
-                deluxe++;
-                break;
-            case "Suite":
-                suite++;
-                break;
+            modelo.addRow(new Object[]{
+                h.getNumeroHabitacion(),
+                h.getTipoHabitacion().getNombre(),
+                h.getTipoCama(),
+                h.getEstado(),
+                entretenimiento
+            });
         }
     }
 
-    txtTotalEstandar.setText(String.valueOf(estandar));
-    txtTotalDeluxe.setText(String.valueOf(deluxe));
-    txtTotalSuite.setText(String.valueOf(suite));
-}
+    // Limpia campos de entrada
+    private void limpiarCampos() {
+        txtNumero.setText("");
+        cmbTipoHab.setSelectedIndex(0);
+        cmbTipoCama.setSelectedIndex(0);
+        cmbEstado.setSelectedIndex(0);
+        txtEntretenimiento.setText("");
+    }
+
+    // Actualiza contador total por tipo
+    private void actualizarResumenTipos() {
+
+        int estandar = 0;
+        int deluxe = 0;
+        int suite = 0;
+
+        for (Habitacion h : Hotel.listaHabitaciones) {
+            String tipo = h.getTipoHabitacion().getNombre();
+
+            switch (tipo) {
+                case "Estandar": estandar++; break;
+                case "Deluxe":   deluxe++;   break;
+                case "Suite":    suite++;    break;
+            }
+        }
+
+        // Muestra resultados en los campos
+        txtTotalEstandar.setText(String.valueOf(estandar));
+        txtTotalDeluxe.setText(String.valueOf(deluxe));
+        txtTotalSuite.setText(String.valueOf(suite));
+    }
+
 
 
    
@@ -332,180 +354,188 @@ private void actualizarResumenTipos() {
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
          try {
-        // 1. Validar número
-        if (txtNumero.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese el número de habitación.");
-            return;
-        }
-
-        int numero = Integer.parseInt(txtNumero.getText().trim());
-
-        // 2. Buscar la habitación por número
-        Habitacion h = null;
-        for (Habitacion hab : Hotel.listaHabitaciones) {
-            if (hab.getNumeroHabitacion() == numero) {
-                h = hab;
-                break;
+            // Validación: debe indicar número
+            if (txtNumero.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el número de habitación.");
+                return;
             }
-        }
 
-        if (h == null) {
-            JOptionPane.showMessageDialog(this, "No existe una habitación con ese número.");
-            return;
-        }
+            int numero = Integer.parseInt(txtNumero.getText().trim());
 
-        // 3. Actualizar los datos
-        String nuevoTipoNombre = cmbTipoHab.getSelectedItem().toString();
-        String nuevoTipoCama = cmbTipoCama.getSelectedItem().toString();
-        String nuevoEstado = cmbEstado.getSelectedItem().toString();
-        String[] nuevoEntretenimiento = txtEntretenimiento.getText().split(",");
-
-        // Buscar tipo de habitación
-        TipoHabitacion tipoNuevo = null;
-        for (TipoHabitacion th : Hotel.listaTipos) {
-            if (th.getNombre().equals(nuevoTipoNombre)) {
-                tipoNuevo = th;
-                break;
+            // Buscar habitación por número
+            Habitacion h = null;
+            for (Habitacion hab : Hotel.listaHabitaciones) {
+                if (hab.getNumeroHabitacion() == numero) {
+                    h = hab;
+                    break;
+                }
             }
-        }
 
-        if (tipoNuevo == null) {
-            JOptionPane.showMessageDialog(this, "Error: tipo no encontrado.");
-            return;
-        }
-        // ACTUALIZAR CONTADORES SI CAMBIA DE TIPO
-        TipoHabitacion tipoViejo = h.getTipoHabitacion();
-
-       if (!tipoViejo.getNombre().equals(tipoNuevo.getNombre())) {
-             tipoViejo.disminuirCantidad(1);
-            tipoNuevo.aumentarCantidad(1);
+            if (h == null) {
+                JOptionPane.showMessageDialog(this, "No existe una habitación con ese número.");
+                return;
             }
-        // 4. Cambiar valores
-        h.setTipoHabitacion(tipoNuevo);
-        h.setTipoCama(nuevoTipoCama);
-        h.setEstado(nuevoEstado);
-        h.setEntretenimiento(nuevoEntretenimiento);
-        actualizarResumenTipos();
 
-        JOptionPane.showMessageDialog(this, "Habitación modificada correctamente.");
+            // Obtiene nuevos valores
+            String nuevoTipoNombre = cmbTipoHab.getSelectedItem().toString();
+            String nuevoTipoCama = cmbTipoCama.getSelectedItem().toString();
+            String nuevoEstado = cmbEstado.getSelectedItem().toString();
+            String[] nuevoEntretenimiento = txtEntretenimiento.getText().split(",");
 
-        cargarTabla();
-        limpiarCampos();
+            // Buscar el tipo de habitación
+            TipoHabitacion tipoNuevo = null;
+            for (TipoHabitacion th : Hotel.listaTipos) {
+                if (th.getNombre().equals(nuevoTipoNombre)) {
+                    tipoNuevo = th;
+                    break;
+                }
+            }
 
-    } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Número inválido.");
-    }
+            if (tipoNuevo == null) {
+                JOptionPane.showMessageDialog(this, "Error: tipo no encontrado.");
+                return;
+            }
+
+            // Si cambió de tipo, ajusta los contadores
+            TipoHabitacion tipoViejo = h.getTipoHabitacion();
+
+            if (!tipoViejo.getNombre().equals(tipoNuevo.getNombre())) {
+                tipoViejo.disminuirCantidad(1);
+                tipoNuevo.aumentarCantidad(1);
+            }
+
+            // Actualiza datos de la habitación
+            h.setTipoHabitacion(tipoNuevo);
+            h.setTipoCama(nuevoTipoCama);
+            h.setEstado(nuevoEstado);
+            h.setEntretenimiento(nuevoEntretenimiento);
+
+            actualizarResumenTipos(); // Actualiza contadores
+
+            JOptionPane.showMessageDialog(this, "Habitación modificada correctamente.");
+
+            cargarTabla();
+            limpiarCampos();
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Número inválido.");
+        }
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-         try {
-        int numero = Integer.parseInt(txtNumero.getText());
-        String tipoHabNombre = cmbTipoHab.getSelectedItem().toString();
-        String tipoCama = cmbTipoCama.getSelectedItem().toString();
-        String estado = cmbEstado.getSelectedItem().toString();
-        String[] entretenimiento = txtEntretenimiento.getText().split(",");
+          try {
+            int numero = Integer.parseInt(txtNumero.getText()); // Número de habitación
 
-        // Buscar el tipo de habitación elegido
-        TipoHabitacion tipoHab = null;
-        for (TipoHabitacion th : Hotel.listaTipos) {
-            if (th.getNombre().equals(tipoHabNombre)) {
-                tipoHab = th;
-                break;
+            String tipoHabNombre = cmbTipoHab.getSelectedItem().toString();
+            String tipoCama = cmbTipoCama.getSelectedItem().toString();
+            String estado = cmbEstado.getSelectedItem().toString();
+
+            // Divide entretenimiento por comas
+            String[] entretenimiento = txtEntretenimiento.getText().split(",");
+
+            // Buscar el tipo elegido
+            TipoHabitacion tipoHab = null;
+            for (TipoHabitacion th : Hotel.listaTipos) {
+                if (th.getNombre().equals(tipoHabNombre)) {
+                    tipoHab = th;
+                    break;
+                }
             }
-        }
 
-        if (tipoHab == null) {
-            JOptionPane.showMessageDialog(this, "Error: tipo no encontrado.");
-            return;
-        }
-
-        // VALIDAR QUE EL NÚMERO NO SE REPITA
-        for (Habitacion h : Hotel.listaHabitaciones) {
-            if (h.getNumeroHabitacion() == numero) {
-                JOptionPane.showMessageDialog(this,
-                        "El número de habitación ya existe.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+            if (tipoHab == null) {
+                JOptionPane.showMessageDialog(this, "Error: tipo no encontrado.");
                 return;
             }
-        }
 
-        // VALIDAR CAPACIDAD DEL TIPO
-        if (tipoHab.getCantidadOcupada() >= tipoHab.getCantidadDisponible()) {
-            JOptionPane.showMessageDialog(this,
+            // Validar número duplicado
+            for (Habitacion h : Hotel.listaHabitaciones) {
+                if (h.getNumeroHabitacion() == numero) {
+                    JOptionPane.showMessageDialog(this,
+                        "El número de habitación ya existe.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // Validar capacidad del tipo
+            if (tipoHab.getCantidadOcupada() >= tipoHab.getCantidadDisponible()) {
+                JOptionPane.showMessageDialog(this,
                     "Ya no hay más disponibilidad para el tipo: " + tipoHabNombre,
                     "Capacidad llena", JOptionPane.WARNING_MESSAGE);
-            return;
+                return;
+            }
+
+            // Crear habitación
+            Habitacion nueva = new Habitacion(numero, tipoHab, tipoCama, estado, entretenimiento);
+            Hotel.listaHabitaciones.add(nueva);
+
+            // Incrementa contador del tipo
+            tipoHab.aumentarCantidad(1);
+            actualizarResumenTipos();
+
+            JOptionPane.showMessageDialog(this, "Habitación registrada correctamente.");
+            cargarTabla();
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Número de habitación inválido.");
         }
 
-        // Crear habitación
-        Habitacion nueva = new Habitacion(numero, tipoHab, tipoCama, estado, entretenimiento);
-        Hotel.listaHabitaciones.add(nueva);
-
-        // Marcar 1 ocupada en el tipo
-        
-        tipoHab.aumentarCantidad(1);
-        actualizarResumenTipos();
-
-        JOptionPane.showMessageDialog(this, "Habitación registrada correctamente.");
-        cargarTabla();
-
-    } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Número de habitación inválido.");
-    }
-    limpiarCampos();
+        limpiarCampos();
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
        try {
-        // 1. Verificar que haya número
-        if (txtNumero.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese el número de habitación a eliminar.");
-            return;
-        }
-
-        int numero = Integer.parseInt(txtNumero.getText().trim());
-
-        // 2. Buscar habitación por número
-        Habitacion h = null;
-        int index = -1;
-
-        for (int i = 0; i < Hotel.listaHabitaciones.size(); i++) {
-            if (Hotel.listaHabitaciones.get(i).getNumeroHabitacion() == numero) {
-                h = Hotel.listaHabitaciones.get(i);
-                index = i;
-                break;
+            // Validar número
+            if (txtNumero.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingrese el número de habitación a eliminar.");
+                return;
             }
+
+            int numero = Integer.parseInt(txtNumero.getText().trim());
+
+            Habitacion h = null;
+            int index = -1;
+
+            // Buscar habitación por número
+            for (int i = 0; i < Hotel.listaHabitaciones.size(); i++) {
+                if (Hotel.listaHabitaciones.get(i).getNumeroHabitacion() == numero) {
+                    h = Hotel.listaHabitaciones.get(i);
+                    index = i;
+                    break;
+                }
+            }
+
+            if (h == null) {
+                JOptionPane.showMessageDialog(this, "No existe una habitación con ese número.");
+                return;
+            }
+
+            // Confirmación
+            int resp = JOptionPane.showConfirmDialog(
+                this,
+                "¿Seguro que desea eliminar la habitación Nº " + numero + "?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (resp != JOptionPane.YES_OPTION) return;
+
+            // Actualiza contador del tipo
+            h.getTipoHabitacion().disminuirCantidad(1);
+
+            // Eliminar
+            Hotel.listaHabitaciones.remove(index);
+
+            actualizarResumenTipos();
+
+            JOptionPane.showMessageDialog(this, "Habitación eliminada correctamente.");
+
+            cargarTabla();
+            limpiarCampos();
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Número de habitación inválido.");
         }
-
-        if (h == null) {
-            JOptionPane.showMessageDialog(this, "No existe una habitación con ese número.");
-            return;
-        }
-
-        // 3. Confirmación antes de eliminar
-        int resp = JOptionPane.showConfirmDialog(
-            this,
-            "¿Seguro que desea eliminar la habitación Nº " + numero + "?",
-            "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION
-        );
-
-        if (resp != JOptionPane.YES_OPTION) return;
-
-        // 4. Actualizar contador del tipo
-        h.getTipoHabitacion().disminuirCantidad(1);
-        //5.  eLIMNAR
-        Hotel.listaHabitaciones.remove(index);
-        actualizarResumenTipos();
-
-        JOptionPane.showMessageDialog(this, "Habitación eliminada correctamente.");
-
-        cargarTabla();
-        limpiarCampos();
-
-    } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Número de habitación inválido.");
-    }// TODO add your handling code here:
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void cmbEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbEstadoActionPerformed

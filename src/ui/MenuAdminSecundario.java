@@ -1,32 +1,36 @@
-
 package ui;
 
-import java.util.List;
 import javax.swing.*;
-import rrhh.*;
-import Sistema.Autenticacion;
-import hotel.*;
-import operaciones.*;
-public class MenuAdminSecundario extends javax.swing.JFrame {
-    
-    private List<Empleado> empleados;
 
-    // ==== CONSTRUCTOR QUE RECIBE EMPLEADOS ====
-   public MenuAdminSecundario() {
+/**
+ * Ventana principal del Administrador Secundario.
+ * Gestiona habitaciones y servicios adicionales.
+ */
+public class MenuAdminSecundario extends javax.swing.JFrame {
+
+    /**
+     * Constructor del menú.
+     * Configura ventana a pantalla completa y carga interfaz.
+     */
+    public MenuAdminSecundario() {
         initComponents();
+
         panelContenido.setLayout(new java.awt.BorderLayout());
         setTitle("Menú - Administrador Secundario");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-    
+
+    /**
+     * Coloca un panel dentro del área central de la ventana.
+     */
     private void cargarPanel(javax.swing.JPanel panel) {
-     panelContenido.removeAll();
-     panelContenido.add(panel, java.awt.BorderLayout.CENTER);
-     panelContenido.revalidate();
-     panelContenido.repaint();
-} 
+        panelContenido.removeAll();
+        panelContenido.add(panel, java.awt.BorderLayout.CENTER);
+        panelContenido.revalidate();
+        panelContenido.repaint();
+    }
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -142,7 +146,7 @@ public class MenuAdminSecundario extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-     
+          // Confirmar salida total
         int opcion = JOptionPane.showConfirmDialog(
             this,
             "¿Deseas salir del sistema?",
@@ -155,14 +159,17 @@ public class MenuAdminSecundario extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSalirActionPerformed
 
     private void btnGestionServicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGestionServicioActionPerformed
-     cargarPanel(new FrmGestionServicios());        // TODO add your handling code here:
+      // Abrir gestión de servicios adicionales
+        cargarPanel(new FrmGestionServicios());        // TODO add your handling code here:
     }//GEN-LAST:event_btnGestionServicioActionPerformed
 
     private void btnGestionHabitacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGestionHabitacionActionPerformed
-      cargarPanel(new FrmGestionHabitaciones());   
+           // Abrir gestión de habitaciones
+        cargarPanel(new FrmGestionHabitaciones());   
     }//GEN-LAST:event_btnGestionHabitacionActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
+       // Volver al login
         new LoginFrame().setVisible(true);
     this.dispose(); // TODO add your handling code here:
     }//GEN-LAST:event_btnCerrarSesionActionPerformed

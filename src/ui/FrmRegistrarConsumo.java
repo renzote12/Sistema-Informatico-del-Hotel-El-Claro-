@@ -1,25 +1,40 @@
-
 package ui;
+
 import hotel.Hotel;
 import operaciones.Estadia;
 import operaciones.Huesped;
 import operaciones.ServicioAdicional;
+
 import javax.swing.*;
 import java.time.LocalDateTime;
 
 public class FrmRegistrarConsumo extends javax.swing.JPanel {
+
+    // ================================================
+    //  Guarda la estadía actual encontrada por DNI
+    //  para poder agregarle consumos.
+    // ================================================
     private Estadia estadiaActual;
-    
+
+    // Constructor del panel
     public FrmRegistrarConsumo() {
-        initComponents();
-        cargarServicios();
+        initComponents();  // Construida por NetBeans
+        cargarServicios(); // Llena el combo de servicios disponibles
     }
+
+    // ======================================================
+    //  Carga los servicios adicionales del hotel en el combo
+    // ======================================================
     private void cargarServicios() {
-    cmbServicios.removeAllItems();
-    for (ServicioAdicional s : Hotel.listaServicios) {
-        cmbServicios.addItem(s.getNombre());
+        cmbServicios.removeAllItems(); // Limpia antes de cargar
+
+        // Recorre todos los servicios registrados en el sistema
+        for (ServicioAdicional s : Hotel.listaServicios) {
+
+            // Solo se muestra el nombre en el combo
+            cmbServicios.addItem(s.getNombre());
+        }
     }
-}
 
    
     @SuppressWarnings("unchecked")
@@ -181,90 +196,112 @@ public class FrmRegistrarConsumo extends javax.swing.JPanel {
     }//GEN-LAST:event_cmbServiciosActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String dni = txtDNI.getText().trim();
+       String dni = txtDNI.getText().trim(); // Obtenemos DNI ingresado
 
-    if (dni.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Ingrese el DNI del huésped.");
-        return;
-    }
-
-    estadiaActual = null;
-
-    // Buscar estadía activa
-    for (Estadia e : Hotel.listaEstadias) {
-        if (e.getReservacion().getHuesped().getDni().equals(dni)
-            && e.getHoraCheckOut() == null) {
-
-            estadiaActual = e;
-            break;
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el DNI del huésped.");
+            return;
         }
-    }
 
-    if (estadiaActual == null) {
-        JOptionPane.showMessageDialog(this, "No hay estadía activa para ese DNI.");
-        lblNombre.setText("Nombre:");
-        lblTipoHabitacion.setText("Tipo habitación:");
-        lblHabitacion.setText("Habitación:");
-        return;
-    }
+        estadiaActual = null; // Reiniciamos variable antes de buscar
 
-    // Mostrar datos
-    lblNombre.setText("Nombre: " +
-        estadiaActual.getReservacion().getHuesped().getNombres() + " " +
-        estadiaActual.getReservacion().getHuesped().getApellidos());
+        // Recorrer todas las estadías registradas
+        for (Estadia e : Hotel.listaEstadias) {
 
-    lblTipoHabitacion.setText("Tipo habitación: " +
-        estadiaActual.getHabitacionAsignada().getTipoHabitacion().getNombre());
+            // Condición para considerar “estancia activa”
+            if (e.getReservacion().getHuesped().getDni().equals(dni)
+                    && e.getHoraCheckOut() == null) {
 
-    lblHabitacion.setText("Habitación: " +
-        estadiaActual.getHabitacionAsignada().getNumeroHabitacion());        // TODO add your handling code here:
+                // Guardamos la estadía encontrada
+                estadiaActual = e;
+                break;
+            }
+        }
+
+        // Si no se encontró una estadía activa
+        if (estadiaActual == null) {
+            JOptionPane.showMessageDialog(this, "No hay estadía activa para ese DNI.");
+
+            // Limpiar labels
+            lblNombre.setText("Nombre:");
+            lblTipoHabitacion.setText("Tipo habitación:");
+            lblHabitacion.setText("Habitación:");
+
+            return;
+        }
+
+        // ================================
+        // Si SÍ se encontró la estadía
+        // Mostrar info del huésped y habitación
+        // ================================
+
+        lblNombre.setText("Nombre: " +
+                estadiaActual.getReservacion().getHuesped().getNombres() + " " +
+                estadiaActual.getReservacion().getHuesped().getApellidos());
+
+        lblTipoHabitacion.setText("Tipo habitación: " +
+                estadiaActual.getHabitacionAsignada().getTipoHabitacion().getNombre());
+
+        lblHabitacion.setText("Habitación: " +
+                estadiaActual.getHabitacionAsignada().getNumeroHabitacion());
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
+        // Verificar que primero se haya buscado una estadía
         if (estadiaActual == null) {
-        JOptionPane.showMessageDialog(this, "Busque una estadía primero.");
-        return;
-    }
-
-    String servicioNombre = cmbServicios.getSelectedItem().toString();
-    String cantidadStr = txtCantidad.getText().trim();
-
-    if (cantidadStr.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Ingrese la cantidad.");
-        return;
-    }
-
-    int cantidad;
-    try {
-        cantidad = Integer.parseInt(cantidadStr);
-        if (cantidad <= 0) throw new NumberFormatException();
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Cantidad inválida.");
-        return;
-    }
-
-    // Buscar el servicio seleccionado
-    ServicioAdicional servicio = null;
-    for (ServicioAdicional s : Hotel.listaServicios) {
-        if (s.getNombre().equals(servicioNombre)) {
-            servicio = s;
-            break;
+            JOptionPane.showMessageDialog(this, "Busque una estadía primero.");
+            return;
         }
-    }
 
-    if (servicio == null) {
-        JOptionPane.showMessageDialog(this, "Servicio no encontrado.");
-        return;
-    }
+        // Obtenemos el servicio seleccionado y cantidad
+        String servicioNombre = cmbServicios.getSelectedItem().toString();
+        String cantidadStr = txtCantidad.getText().trim();
 
-    // REGISTRAR EL CONSUMO DENTRO DE LA ESTADÍA
-    estadiaActual.agregarServicio(servicio, cantidad);
+        if (cantidadStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese la cantidad.");
+            return;
+        }
 
-    JOptionPane.showMessageDialog(this, 
-        "Consumo registrado correctamente:\n" +
-        servicio.getNombre() + " x" + cantidad);
+        // Validar que la cantidad sea un número positivo
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(cantidadStr);
+            if (cantidad <= 0) throw new NumberFormatException();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Cantidad inválida.");
+            return;
+        }
 
-    txtCantidad.setText(""); // Limpiar campo        // TODO add your handling code here:
+        // ===============================
+        // Buscar servicio según el nombre
+        // ===============================
+
+        ServicioAdicional servicio = null;
+
+        for (ServicioAdicional s : Hotel.listaServicios) {
+            if (s.getNombre().equals(servicioNombre)) {
+                servicio = s;
+                break;
+            }
+        }
+
+        if (servicio == null) {
+            JOptionPane.showMessageDialog(this, "Servicio no encontrado.");
+            return;
+        }
+
+        // ======================================================
+        // AGREGAR EL CONSUMO A LA ESTADÍA (a través del arreglo)
+        // ======================================================
+
+        estadiaActual.agregarServicio(servicio, cantidad);
+
+        JOptionPane.showMessageDialog(this,
+                "Consumo registrado correctamente:\n" +
+                        servicio.getNombre() + " x" + cantidad);
+
+        // Limpiar campo cantidad
+        txtCantidad.setText("");
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
 

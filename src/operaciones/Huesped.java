@@ -1,5 +1,9 @@
 package operaciones;
 
+/**
+ * Representa a un huésped registrado en el hotel.
+ * Contiene información personal y de contacto.
+ */
 public class Huesped {
 
     private String dni;
@@ -9,6 +13,9 @@ public class Huesped {
     private String correo;
     private String lugarResidencia;
 
+    /**
+     * Constructor del huésped.
+     */
     public Huesped(String dni, String nombres, String apellidos,
                    String telefono, String correo,
                    String lugarResidencia) {
@@ -21,6 +28,7 @@ public class Huesped {
         this.lugarResidencia = lugarResidencia;
     }
 
+    // GETTERS
     public String getDni() { return dni; }
     public String getNombres() { return nombres; }
     public String getApellidos() { return apellidos; }
@@ -28,6 +36,7 @@ public class Huesped {
     public String getCorreo() { return correo; }
     public String getLugarResidencia() { return lugarResidencia; }
 
+    // SETTERS
     public void setNombres(String nombres) { this.nombres = nombres; }
     public void setApellidos(String apellidos) { this.apellidos = apellidos; }
     public void setTelefono(String telefono) { this.telefono = telefono; }

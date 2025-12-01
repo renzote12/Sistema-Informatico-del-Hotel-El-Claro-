@@ -1,14 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package ui;
 
+// Importamos las clases necesarias
 import hotel.Hotel;
 import hotel.TipoHabitacion;
 import operaciones.Huesped;
 import operaciones.Reservacion;
-import hotel.Habitacion;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.time.LocalDate;
@@ -16,26 +13,40 @@ import java.time.format.DateTimeParseException;
 
 public class FrmReservaciones extends javax.swing.JPanel {
 
-    
+    // ============================
+    //  CONSTRUCTOR DEL FORMULARIO
+    // ============================
     public FrmReservaciones() {
-      
-        initComponents();
-        cargarTipos();
-        cargarTabla();
-        actualizarPrecio();
+
+        initComponents();      // Construye los elementos gráficos (NetBeans)
+        cargarTipos();         // Carga los tipos de habitación al combo box
+        cargarTabla();         // Muestra todas las reservaciones en la tabla
+        actualizarPrecio();    // Muestra el precio del tipo seleccionado
+
+        // Cada vez que se cambie el tipo en el combo, se actualiza el precio
         cmbTipoHab.addActionListener(e -> actualizarPrecio());
     }
+
+    // ======================================================
+    //  Cargar nombres de tipos de habitación en el combo
+    // ======================================================
     private void cargarTipos() {
-        cmbTipoHab.removeAllItems();
+        cmbTipoHab.removeAllItems();  // Limpia el combo
+
+        // Recorremos la lista de tipos del hotel
         for (TipoHabitacion th : Hotel.listaTipos) {
-            cmbTipoHab.addItem(th.getNombre());
+            cmbTipoHab.addItem(th.getNombre()); // Agrega el nombre al combo
         }
     }
-    
-     private void cargarTabla() {
-        DefaultTableModel modelo = (DefaultTableModel) tblReservas.getModel();
-        modelo.setRowCount(0);
 
+    // ======================================================
+    //  Cargar todas las reservas en la tabla
+    // ======================================================
+    private void cargarTabla() {
+        DefaultTableModel modelo = (DefaultTableModel) tblReservas.getModel();
+        modelo.setRowCount(0); // Limpia la tabla
+
+        // Cada reservación se agrega como fila
         for (Reservacion r : Hotel.listaReservaciones) {
             modelo.addRow(new Object[]{
                     r.getHuesped().getDni(),
@@ -46,23 +57,36 @@ public class FrmReservaciones extends javax.swing.JPanel {
             });
         }
     }
-       private void limpiar() {
+
+    // ======================================================
+    //  Limpiar los campos del formulario
+    // ======================================================
+    private void limpiar() {
         txtDni.setText("");
         txtNombre.setText("");
         txtInicio.setText("");
         txtFin.setText("");
-        cmbTipoHab.setSelectedIndex(0);
+        cmbTipoHab.setSelectedIndex(0); // Regresa al primer tipo
     }
-       private void actualizarPrecio() {
-    String nombreTipo = cmbTipoHab.getSelectedItem().toString();
 
-    for (TipoHabitacion t : Hotel.listaTipos) {
-        if (t.getNombre().equalsIgnoreCase(nombreTipo)) {
-            lblPrecioNoche.setText("Precio por noche: S/ " + t.getPrecioPorNoche());
-            return;
+    // ======================================================
+    //  Actualizar el precio por noche según tipo
+    // ======================================================
+    private void actualizarPrecio() {
+
+        String nombreTipo = cmbTipoHab.getSelectedItem().toString();
+
+        // Busca el tipo en la lista del hotel
+        for (TipoHabitacion t : Hotel.listaTipos) {
+
+            if (t.getNombre().equalsIgnoreCase(nombreTipo)) {
+
+                // Muestra el precio por noche en un label
+                lblPrecioNoche.setText("Precio por noche: S/ " + t.getPrecioPorNoche());
+                return;
+            }
         }
     }
-}
     
 
   
@@ -239,64 +263,78 @@ public class FrmReservaciones extends javax.swing.JPanel {
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
       try {
-        String dni = txtDni.getText().trim();
-        String fechaI = txtInicio.getText().trim();
-        String fechaF = txtFin.getText().trim();
-        String tipoNombre = cmbTipoHab.getSelectedItem().toString();
+            // Leer datos del formulario
+            String dni = txtDni.getText().trim();
+            String fechaI = txtInicio.getText().trim();
+            String fechaF = txtFin.getText().trim();
+            String tipoNombre = cmbTipoHab.getSelectedItem().toString();
 
-        // Validar huésped
-        Huesped h = null;
-        for (Huesped x : Hotel.listaHuespedes) {
-            if (x.getDni().equals(dni)) {
-                h = x;
-                break;
+            // ===========================
+            // Buscar huésped en el sistema
+            // ===========================
+            Huesped h = null;
+            for (Huesped x : Hotel.listaHuespedes) {
+                if (x.getDni().equals(dni)) {
+                    h = x;
+                    break;
+                }
             }
-        }
-        if (h == null) {
-            JOptionPane.showMessageDialog(this, "Huésped no registrado.");
-            return;
-        }
 
-        // Validar fechas
-        LocalDate fi = LocalDate.parse(fechaI);
-        LocalDate ff = LocalDate.parse(fechaF);
-
-        if (!ff.isAfter(fi)) {
-            JOptionPane.showMessageDialog(this, "La fecha fin debe ser posterior a la fecha inicio.");
-            return;
-        }
-
-        // Buscar tipo
-        TipoHabitacion tipo = null;
-        for (TipoHabitacion t : Hotel.listaTipos) {
-            if (t.getNombre().equals(tipoNombre)) {
-                tipo = t;
-                break;
+            if (h == null) {
+                JOptionPane.showMessageDialog(this, "Huésped no registrado.");
+                return;
             }
+
+            // ===========================
+            // Validar fechas
+            // ===========================
+            LocalDate fi = LocalDate.parse(fechaI);
+            LocalDate ff = LocalDate.parse(fechaF);
+
+            if (!ff.isAfter(fi)) {
+                JOptionPane.showMessageDialog(this, "La fecha fin debe ser posterior a la fecha inicio.");
+                return;
+            }
+
+            // ===========================
+            // Buscar tipo habitación
+            // ===========================
+            TipoHabitacion tipo = null;
+            for (TipoHabitacion t : Hotel.listaTipos) {
+                if (t.getNombre().equals(tipoNombre)) {
+                    tipo = t;
+                    break;
+                }
+            }
+
+            if (tipo == null) {
+                JOptionPane.showMessageDialog(this, "Tipo no encontrado.");
+                return;
+            }
+
+            // ===========================
+            // Validar disponibilidad
+            // ===========================
+            if (!Hotel.hayDisponibilidad(tipo, fi, ff)) {
+                JOptionPane.showMessageDialog(this, "No hay habitaciones disponibles para ese rango.");
+                return;
+            }
+
+            // ===========================
+            // Registrar reservación
+            // ===========================
+            Reservacion r = new Reservacion(h, tipo, fi, ff);
+            Hotel.listaReservaciones.add(r);
+
+            JOptionPane.showMessageDialog(this, "Reservación registrada.");
+
+            cargarTabla(); // Refresca la tabla
+            limpiar();     // Limpia formulario
+
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Usar AAAA-MM-DD.");
         }
-
-        if (tipo == null) {
-            JOptionPane.showMessageDialog(this, "Tipo no encontrado.");
-            return;
-        }
-
-        // Validar disponibilidad
-        if (!Hotel.hayDisponibilidad(tipo, fi, ff)) {
-            JOptionPane.showMessageDialog(this, "No hay habitaciones disponibles para ese rango.");
-            return;
-        }
-
-        // Registrar
-        Reservacion r = new Reservacion(h, tipo, fi, ff);
-        Hotel.listaReservaciones.add(r);
-
-        JOptionPane.showMessageDialog(this, "Reservación registrada.");
-        cargarTabla();
-        limpiar();
-
-    } catch (DateTimeParseException e) {
-        JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Use YYYY-MM-DD.");
-    }   // TODO add your handling code here:
+    
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void txtDniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDniActionPerformed
@@ -308,121 +346,127 @@ public class FrmReservaciones extends javax.swing.JPanel {
     }//GEN-LAST:event_txtInicioActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-      try {
-        String dni = txtDni.getText().trim();
-        String inicio = txtInicio.getText().trim();
-        String fin = txtFin.getText().trim();
+       try {
+            // Obtener datos
+            String dni = txtDni.getText().trim();
+            String inicio = txtInicio.getText().trim();
+            String fin = txtFin.getText().trim();
 
-        if (dni.isEmpty() || inicio.isEmpty() || fin.isEmpty()) {
-            JOptionPane.showMessageDialog(this, 
-                "Ingrese DNI, fecha inicio y fecha fin para eliminar.");
-            return;
-        }
-
-        LocalDate fi = LocalDate.parse(inicio);
-        LocalDate ff = LocalDate.parse(fin);
-
-        int index = -1;
-
-        for (int i = 0; i < Hotel.listaReservaciones.size(); i++) {
-            Reservacion r = Hotel.listaReservaciones.get(i);
-
-            if (r.getHuesped().getDni().equals(dni)
-                    && r.getFechaInicio().equals(fi)
-                    && r.getFechaFin().equals(ff)) {
-
-                index = i;
-                break;
+            if (dni.isEmpty() || inicio.isEmpty() || fin.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Ingrese DNI, fecha inicio y fecha fin para eliminar.");
+                return;
             }
+
+            LocalDate fi = LocalDate.parse(inicio);
+            LocalDate ff = LocalDate.parse(fin);
+
+            // Buscar reservación exacta
+            int index = -1;
+            for (int i = 0; i < Hotel.listaReservaciones.size(); i++) {
+                Reservacion r = Hotel.listaReservaciones.get(i);
+
+                if (r.getHuesped().getDni().equals(dni)
+                        && r.getFechaInicio().equals(fi)
+                        && r.getFechaFin().equals(ff)) {
+
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index == -1) {
+                JOptionPane.showMessageDialog(this, "No se encontró la reservación.");
+                return;
+            }
+
+            // Eliminar
+            Hotel.listaReservaciones.remove(index);
+
+            JOptionPane.showMessageDialog(this, "Reservación eliminada.");
+
+            cargarTabla();
+            limpiar();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: revise los datos.");
         }
-
-        if (index == -1) {
-            JOptionPane.showMessageDialog(this, "No se encontró la reservación.");
-            return;
-        }
-
-        Hotel.listaReservaciones.remove(index);
-        JOptionPane.showMessageDialog(this, "Reservación eliminada.");
-
-        cargarTabla();
-        limpiar();
-
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error: revise los datos.");
-    }        // TODO add your handling code here:
+    
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-         try {
-        String dni = txtDni.getText().trim();
-        String inicio = txtInicio.getText().trim();
-        String fin = txtFin.getText().trim();
-        String tipoNuevoNombre = cmbTipoHab.getSelectedItem().toString();
+     try {
+            String dni = txtDni.getText().trim();
+            String inicio = txtInicio.getText().trim();
+            String fin = txtFin.getText().trim();
+            String tipoNuevoNombre = cmbTipoHab.getSelectedItem().toString();
 
-        if (dni.isEmpty() || inicio.isEmpty() || fin.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Complete DNI, fecha inicio y fin.");
-            return;
-        }
-
-        LocalDate fiNueva = LocalDate.parse(inicio);
-        LocalDate ffNueva = LocalDate.parse(fin);
-
-        // Validación: fi < ff
-        if (!ffNueva.isAfter(fiNueva)) {
-            JOptionPane.showMessageDialog(this,
-                "La fecha final debe ser posterior a la inicial.");
-            return;
-        }
-
-        Reservacion reservacion = null;
-
-        for (Reservacion r : Hotel.listaReservaciones) {
-            if (r.getHuesped().getDni().equals(dni)) {
-                reservacion = r;
-                break;
+            if (dni.isEmpty() || inicio.isEmpty() || fin.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Complete DNI, fecha inicio y fin.");
+                return;
             }
-        }
 
-        if (reservacion == null) {
-            JOptionPane.showMessageDialog(this, "No se encontró la reservación.");
-            return;
-        }
+            LocalDate fiNueva = LocalDate.parse(inicio);
+            LocalDate ffNueva = LocalDate.parse(fin);
 
-        // Buscar el nuevo tipo
-        TipoHabitacion nuevoTipo = null;
-
-        for (TipoHabitacion t : Hotel.listaTipos) {
-            if (t.getNombre().equals(tipoNuevoNombre)) {
-                nuevoTipo = t;
-                break;
+            if (!ffNueva.isAfter(fiNueva)) {
+                JOptionPane.showMessageDialog(this,
+                        "La fecha final debe ser posterior a la inicial.");
+                return;
             }
+
+            // Buscar la reservación por DNI
+            Reservacion reservacion = null;
+
+            for (Reservacion r : Hotel.listaReservaciones) {
+                if (r.getHuesped().getDni().equals(dni)) {
+                    reservacion = r;
+                    break;
+                }
+            }
+
+            if (reservacion == null) {
+                JOptionPane.showMessageDialog(this, "No se encontró la reservación.");
+                return;
+            }
+
+            // Buscar nuevo tipo
+            TipoHabitacion nuevoTipo = null;
+
+            for (TipoHabitacion t : Hotel.listaTipos) {
+                if (t.getNombre().equals(tipoNuevoNombre)) {
+                    nuevoTipo = t;
+                    break;
+                }
+            }
+
+            if (nuevoTipo == null) {
+                JOptionPane.showMessageDialog(this, "Tipo no válido.");
+                return;
+            }
+
+            // Validar disponibilidad
+            if (!Hotel.hayDisponibilidad(nuevoTipo, fiNueva, ffNueva)) {
+                JOptionPane.showMessageDialog(this,
+                        "No hay disponibilidad para ese tipo de habitación en estas fechas.");
+                return;
+            }
+
+            // Modificar datos
+            reservacion.setFechaInicio(fiNueva);
+            reservacion.setFechaFin(ffNueva);
+            reservacion.setTipo(nuevoTipo);
+
+            JOptionPane.showMessageDialog(this, "Reservación modificada.");
+
+            cargarTabla();
+            limpiar();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error en modificación.");
         }
-
-        if (nuevoTipo == null) {
-            JOptionPane.showMessageDialog(this, "Tipo no válido.");
-            return;
-        }
-
-        // Validar disponibilidad para nuevas fechas
-        if (!Hotel.hayDisponibilidad(nuevoTipo, fiNueva, ffNueva)) {
-            JOptionPane.showMessageDialog(this, 
-                "No hay disponibilidad para ese tipo de habitación en estas fechas.");
-            return;
-        }
-
-        // MODIFICAR
-        reservacion.setFechaInicio(fiNueva);
-        reservacion.setFechaFin(ffNueva);
-        reservacion.setTipo(nuevoTipo);
-
-        JOptionPane.showMessageDialog(this, "Reservación modificada.");
-
-        cargarTabla();
-        limpiar();
-
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, "Error en modificación.");
-    }
+    
+       
     }//GEN-LAST:event_btnModificarActionPerformed
 
 

@@ -1,63 +1,83 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
-package ui;
+package ui; // Paquete donde se encuentra este formulario
+
 import hotel.Hotel;
 import hotel.Habitacion;
 import operaciones.Estadia;
 import operaciones.Huesped;
 import operaciones.Comprobante;
+
 import javax.swing.*;
 import java.time.LocalDateTime;
 
+// Este formulario permite buscar una estadía activa por DNI
+// mostrar los datos y finalmente realizar el Check-Out generando un comprobante
 public class FrmCheckOut extends javax.swing.JPanel {
 
-     private Estadia estadiaActual;
+    // Guarda la estadía encontrada para trabajar con ella
+    private Estadia estadiaActual;
 
     public FrmCheckOut() {
-        initComponents();
+        initComponents(); // Carga el diseño visual (NetBeans)
     }
-  private void limpiar() {
-    txtDNI.setText("");
 
-    lblNombre.setText("Nombre:");
-    lblTipoHabitacion.setText("Tipo habitación:");
-    lblNumeroHabitacion.setText("N° Habitación:");
-    lblFechaInicio.setText("Fecha inicio:");
-    lblFechaFin.setText("Fecha fin:");
-    lblTotalHabitacion.setText("Total habitación:");
-    lblTotalServicios.setText("Total servicios:");
-    lblTotalPagar.setText("TOTAL A PAGAR:");
 
-    estadiaActual = null;
-}
+    // ============================================================
+    // ======================= MÉTODO LIMPIAR ======================
+    // ============================================================
+    // Restaura los campos a su estado inicial
+    private void limpiar() {
+        txtDNI.setText("");
 
-   private void mostrarDatos() {
-   Huesped h = estadiaActual.getReservacion().getHuesped();
+        lblNombre.setText("Nombre:");
+        lblTipoHabitacion.setText("Tipo habitación:");
+        lblNumeroHabitacion.setText("N° Habitación:");
+        lblFechaInicio.setText("Fecha inicio:");
+        lblFechaFin.setText("Fecha fin:");
+        lblTotalHabitacion.setText("Total habitación:");
+        lblTotalServicios.setText("Total servicios:");
+        lblTotalPagar.setText("TOTAL A PAGAR:");
 
-    lblNombre.setText("Nombre: " + h.getNombres() + " " + h.getApellidos());
-    lblTipoHabitacion.setText("Tipo habitación: " 
-        + estadiaActual.getHabitacionAsignada().getTipoHabitacion().getNombre());
-    lblNumeroHabitacion.setText("N° Habitación: " 
-        + estadiaActual.getHabitacionAsignada().getNumeroHabitacion());
+        estadiaActual = null; // Limpia la referencia
+    }
 
-    lblFechaInicio.setText("Fecha inicio: " 
-        + estadiaActual.getReservacion().getFechaInicio().toString());
-    lblFechaFin.setText("Fecha fin: " 
-        + estadiaActual.getReservacion().getFechaFin().toString());
 
-    // HORA ACTUAL PARA CALCULOS PRELIMINARES
-    LocalDateTime ahora = LocalDateTime.now();
+    // ============================================================
+    // =================== MOSTRAR DATOS EN PANTALLA ==============
+    // ============================================================
+    // Se llama cuando se encuentra la estadía activa
+    private void mostrarDatos() {
 
-    double tHab = estadiaActual.calcularTotalHabitacion(ahora);
-    double tServ = estadiaActual.calcularTotalServicios();
-    double tTotal = estadiaActual.calcularTotalPagar(ahora);
+        // Obtiene el huésped de la reservación
+        Huesped h = estadiaActual.getReservacion().getHuesped();
 
-    lblTotalHabitacion.setText("Total habitación: S/ " + tHab);
-    lblTotalServicios.setText("Total servicios: S/ " + tServ);
-    lblTotalPagar.setText("TOTAL A PAGAR: S/ " + tTotal);
-}
+        // Muestra datos personales
+        lblNombre.setText("Nombre: " + h.getNombres() + " " + h.getApellidos());
+
+        // Muestra el tipo y número de habitación asignada
+        lblTipoHabitacion.setText("Tipo habitación: "
+                + estadiaActual.getHabitacionAsignada().getTipoHabitacion().getNombre());
+        lblNumeroHabitacion.setText("N° Habitación: "
+                + estadiaActual.getHabitacionAsignada().getNumeroHabitacion());
+
+        // Muestra fechas de la reservación
+        lblFechaInicio.setText("Fecha inicio: "
+                + estadiaActual.getReservacion().getFechaInicio().toString());
+        lblFechaFin.setText("Fecha fin: "
+                + estadiaActual.getReservacion().getFechaFin().toString());
+
+        // Obtiene hora actual para cálculos preliminares
+        LocalDateTime ahora = LocalDateTime.now();
+
+        // Calcula totales usando los métodos de Estadia
+        double tHab = estadiaActual.calcularTotalHabitacion(ahora);
+        double tServ = estadiaActual.calcularTotalServicios();
+        double tTotal = estadiaActual.calcularTotalPagar(ahora);
+
+        // Muestra los totales en pantalla
+        lblTotalHabitacion.setText("Total habitación: S/ " + tHab);
+        lblTotalServicios.setText("Total servicios: S/ " + tServ);
+        lblTotalPagar.setText("TOTAL A PAGAR: S/ " + tTotal);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -209,63 +229,82 @@ public class FrmCheckOut extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-       String dni = txtDNI.getText().trim();
+       String dni = txtDNI.getText().trim(); // Obtiene el DNI ingresado
 
-    if (dni.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Ingrese DNI.");
-        return;
-    }
-
-    estadiaActual = null;
-
-    for (Estadia e : Hotel.listaEstadias) {
-        if (e.getReservacion().getHuesped().getDni().equals(dni)
-            && e.getHoraCheckOut() == null) {
-
-            estadiaActual = e;
-            break;
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese DNI.");
+            return;
         }
-    }
 
-    if (estadiaActual == null) {
-        JOptionPane.showMessageDialog(this, "No hay estadía activa para ese DNI.");
-        return;
-    }
+        estadiaActual = null; // Por seguridad, limpia cualquier dato previo
 
-    mostrarDatos();     // TODO add your handling code here:
+        // Recorre todas las estadías registradas
+        for (Estadia e : Hotel.listaEstadias) {
+
+            // Condición para encontrar una estadía activa:
+            // El huésped coincide y el check-out NO fue realizado aún
+            if (e.getReservacion().getHuesped().getDni().equals(dni)
+                    && e.getHoraCheckOut() == null) {
+
+                estadiaActual = e;
+                break;
+            }
+        }
+
+        // Si no se encontró, mostrar mensaje
+        if (estadiaActual == null) {
+            JOptionPane.showMessageDialog(this, "No hay estadía activa para ese DNI.");
+            return;
+        }
+
+        // Si la encuentra, muestra los datos
+        mostrarDatos();     // TODO add your handling code here:
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckOutActionPerformed
-         if (estadiaActual == null) {
-        JOptionPane.showMessageDialog(this, "Busque una estadía primero.");
-        return;
-    }
+       // Primero se verifica que realmente haya una estadía cargada
+        if (estadiaActual == null) {
+            JOptionPane.showMessageDialog(this, "Busque una estadía primero.");
+            return;
+        }
 
-    // Realizar Check-Out
-    estadiaActual.realizarCheckOut();
+        // -------------------------------------------------------------
+        // 1. Realizar check-out en la clase Estadia
+        // -------------------------------------------------------------
+        estadiaActual.realizarCheckOut();
 
-    LocalDateTime ahora = LocalDateTime.now();
+        // Hora de salida real para los cálculos finales
+        LocalDateTime ahora = LocalDateTime.now();
 
-    double tHab = estadiaActual.calcularTotalHabitacion(ahora);
-    double tServ = estadiaActual.calcularTotalServicios();
-    double tTotal = estadiaActual.calcularTotalPagar(ahora);
+        // -------------------------------------------------------------
+        // 2. Cálculos de montos finales
+        // -------------------------------------------------------------
+        double tHab = estadiaActual.calcularTotalHabitacion(ahora);
+        double tServ = estadiaActual.calcularTotalServicios();
+        double tTotal = estadiaActual.calcularTotalPagar(ahora);
 
-    // Crear comprobante con el nuevo constructor
-    Comprobante c = new Comprobante(
-        ahora,
-        estadiaActual.getReservacion().getHuesped(),
-        estadiaActual.getHabitacionAsignada(),
-        tHab,
-        tServ,
-        tTotal
-    );
+        // -------------------------------------------------------------
+        // 3. Crear comprobante
+        // -------------------------------------------------------------
+        Comprobante c = new Comprobante(
+                ahora,                                            // Fecha de emisión
+                estadiaActual.getReservacion().getHuesped(),     // Huésped
+                estadiaActual.getHabitacionAsignada(),           // Habitación
+                tHab,                                             // Total habitación
+                tServ,                                            // Total servicios
+                tTotal                                            // Total a pagar
+        );
 
-    Hotel.listaComprobantes.add(c);
+        // Guarda el comprobante en la lista del hotel
+        Hotel.listaComprobantes.add(c);
 
-    JOptionPane.showMessageDialog(this,
-        "Check-Out realizado.\nMonto total: S/ " + tTotal);
+        // -------------------------------------------------------------
+        // 4. Mensaje final
+        // -------------------------------------------------------------
+        JOptionPane.showMessageDialog(this,
+                "Check-Out realizado.\nMonto total: S/ " + tTotal);
 
-    limpiar();    // TODO add your handling code here:
+        limpiar(); // Restablece el formulario   
     }//GEN-LAST:event_btnCheckOutActionPerformed
 
 

@@ -1,34 +1,40 @@
 
 package ui;
-import java.util.List;
-import javax.swing.*;
-import rrhh.*;
-import Sistema.Autenticacion;
-import hotel.*;
-import operaciones.*;
-public class MenuRecepcionista extends javax.swing.JFrame {
-    
-  
-   
 
-    // ==== CONSTRUCTOR QUE RECIBE EMPLEADOS ====
+import javax.swing.*;
+
+/**
+ * Ventana principal del rol Recepcionista.
+ * Permite acceder a: gestión de huéspedes, reservaciones,
+ * check-in, check-out y registro de consumos.
+ */
+public class MenuRecepcionista extends javax.swing.JFrame {
+
+    /**
+     * Constructor principal del menú.
+     * Inicializa la interfaz y configura la ventana.
+     */
     public MenuRecepcionista() {
-        initComponents();
-        
-        panelContenido.setLayout(new java.awt.BorderLayout());
+        initComponents(); // Carga la interfaz creada por NetBeans
+
+        panelContenido.setLayout(new java.awt.BorderLayout()); // Panel dinámico
+
         setTitle("Menú - Recepcionista");
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Pantalla completa
+        setLocationRelativeTo(null); // Centrar pantalla
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
-     // ==== Constructor vacío ====
-    
-      private void cargarPanel(javax.swing.JPanel panel) {
-     panelContenido.removeAll();
-     panelContenido.add(panel, java.awt.BorderLayout.CENTER);
-     panelContenido.revalidate();
-     panelContenido.repaint();
-} 
+
+    /**
+     * Carga un panel dentro del panel principal.
+     * Permite cambiar entre CheckIn, CheckOut, Reservas, etc.
+     */
+    private void cargarPanel(javax.swing.JPanel panel) {
+        panelContenido.removeAll(); // Limpia pantalla
+        panelContenido.add(panel, java.awt.BorderLayout.CENTER); // Agrega nuevo panel
+        panelContenido.revalidate();
+        panelContenido.repaint();
+    }
 
    
     @SuppressWarnings("unchecked")
@@ -176,32 +182,39 @@ public class MenuRecepcionista extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGestionHuespedesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGestionHuespedesActionPerformed
-      cargarPanel(new FrmGestionHuespedes());        // TODO add your handling code here:
+      // Abre formulario de gestión de huéspedes
+        cargarPanel(new FrmGestionHuespedes());        // TODO add your handling code here:
     }//GEN-LAST:event_btnGestionHuespedesActionPerformed
 
     private void btnReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservasActionPerformed
-     btnReservas.addActionListener(e -> cargarPanel(new FrmReservaciones()));        // TODO add your handling code here:
+         // Abre formulario de reservaciones
+        btnReservas.addActionListener(e -> cargarPanel(new FrmReservaciones()));        // TODO add your handling code here:
     }//GEN-LAST:event_btnReservasActionPerformed
 
     private void btnCheckInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckInActionPerformed
-          cargarPanel(new FrmCheckIn());    // TODO add your handling code here:
+        // Abre formulario check-in 
+        cargarPanel(new FrmCheckIn());    // TODO add your handling code here:
     }//GEN-LAST:event_btnCheckInActionPerformed
 
     private void btnCheckOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckOutActionPerformed
-         cargarPanel(new FrmCheckOut()); // TODO add your handling code here:
+         // Abre formulario de check-out
+        cargarPanel(new FrmCheckOut()); // TODO add your handling code here:
     }//GEN-LAST:event_btnCheckOutActionPerformed
 
     private void btnRegistrarConsumosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarConsumosActionPerformed
-         cargarPanel(new FrmRegistrarConsumo());        // TODO add your handling code here:
+        // Abre formulario para registrar consumos de servicios 
+        cargarPanel(new FrmRegistrarConsumo());        // TODO add your handling code here:
     }//GEN-LAST:event_btnRegistrarConsumosActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
-            new LoginFrame().setVisible(true);
+        // Regresar al login   
+        new LoginFrame().setVisible(true);
     this.dispose();       // TODO add your handling code here:
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-             int opcion = JOptionPane.showConfirmDialog(
+       // Pregunta antes de cerrar el sistema   
+        int opcion = JOptionPane.showConfirmDialog(
             this,
             "¿Deseas salir del sistema?",
             "Confirmar salida",

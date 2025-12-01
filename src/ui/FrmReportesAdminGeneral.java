@@ -1,97 +1,137 @@
-package ui;
-
+// Importaciones necesarias
 import javax.swing.table.DefaultTableModel;
-import java.time.LocalDate;            // ← NECESARIO
-import java.time.ZoneId;              // ← NECESARIO
-import javax.swing.JTextField;        // ← NECESARIO
+import java.time.LocalDate;        // Para manejar fechas
+import java.time.ZoneId;          // Convertir DateTime a LocalDate
+import javax.swing.JTextField;    // Permite recibir campos de texto
 
 import hotel.Habitacion;
 import hotel.Hotel;
+
 import javax.swing.JOptionPane;
 
-import operaciones.Comprobante;                 // ← NECESARIO PARA REPORTE DE INGRESOS
+import operaciones.Comprobante;   // Para leer datos de facturación
 
 public class FrmReportesAdminGeneral extends javax.swing.JPanel {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmReportesAdminGeneral.class.getName());
 
-    
+    // Logger opcional (no lo usas, pero no estorba)
+    private static final java.util.logging.Logger logger =
+            java.util.logging.Logger.getLogger(FrmReportesAdminGeneral.class.getName());
+
+    // ================================
+    //       CONSTRUCTOR DEL PANEL
+    // ================================
     public FrmReportesAdminGeneral() {
-        initComponents();
-        
-       
-        
+        initComponents();  // Construye interfaz gráfica (NetBeans)
     }
-   
-    // =============================================
-// ==========   REPORTE DE OCUPACIÓN   =========
-// =============================================
-private void cargarReporteOcupacion() {
 
-    DefaultTableModel modelo = (DefaultTableModel) tblOcupacion.getModel();
-    modelo.setRowCount(0); // limpia filas
+    // ===============================================================
+    // ===============    REPORTE DE OCUPACIÓN     ===================
+    // ===============================================================
 
-    for (Habitacion h : Hotel.listaHabitaciones) {
-        modelo.addRow(new Object[]{
-            h.getNumeroHabitacion(),
-            h.getTipoCama(),
-            h.getEstado()
-        });
-    }
-}
-private void generarReporteIngresos() {
+    /**
+     * Carga a la tabla las habitaciones registradas en el hotel.
+     * No depende de fechas, solo muestra el estado actual.
+     */
+    private void cargarReporteOcupacion() {
 
-    LocalDate inicio = obtenerFecha(txtFechaInicio);
-    LocalDate fin = obtenerFecha(txtFechaFin);
+        // Obtenemos el modelo de la tabla
+        DefaultTableModel modelo = (DefaultTableModel) tblOcupacion.getModel();
 
-    if (inicio == null || fin == null) return;
+        modelo.setRowCount(0); // Limpia la tabla antes de cargar nuevos datos
 
-    DefaultTableModel modelo = (DefaultTableModel) tblIngresos.getModel();
-    modelo.setRowCount(0); // limpiar filas
+        // Recorremos TODAS las habitaciones del sistema
+        for (Habitacion h : Hotel.listaHabitaciones) {
 
-    double totalHab = 0;
-    double totalServ = 0;
-
-    for (Comprobante f : Hotel.listaComprobantes) {
-
-        LocalDate fechaFactura = f.getFecha()
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate();
-
-        if (!fechaFactura.isBefore(inicio) && !fechaFactura.isAfter(fin)) {
-
+            // Agregamos cada habitación como una fila
             modelo.addRow(new Object[]{
-                fechaFactura.toString(),
-               f.getHuesped().getNombres() + " " + f.getHuesped().getApellidos(),
-                f.getHabitacion().getNumeroHabitacion(),
-                f.getMontoHabitacion(),
-                f.getMontoServicios()
+                    h.getNumeroHabitacion(),     // Número físico de habitación
+                    h.getTipoCama(),             // Tipo de cama
+                    h.getEstado()                // Estado: Ocupada / Libre
             });
-
-            totalHab += f.getMontoHabitacion();
-            totalServ += f.getMontoServicios();
         }
     }
 
-    txtTotalHabitaciones.setText(String.valueOf(totalHab));
-    txtTotalServicios.setText(String.valueOf(totalServ));
-    txtTotalGeneral.setText(String.valueOf(totalHab + totalServ));
-}
-private LocalDate obtenerFecha(JTextField campo) {
-    try {
-        
-        return LocalDate.parse(campo.getText().trim());
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(
-                null,
-                "Fecha inválida: " + campo.getText() + "\nFormato correcto: AAAA-MM-DD",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-        );
-        campo.requestFocus(); // vuelve al campo que falló
-        return null;
+    // ===============================================================
+    // ===============    REPORTE DE INGRESOS     ====================
+    // ===============================================================
+
+    /**
+     * Genera el reporte de ingresos entre dos fechas.
+     * Recorre los comprobantes generados durante los check-out.
+     */
+    private void generarReporteIngresos() {
+
+        // Leemos las fechas de los textfields (validando formato)
+        LocalDate inicio = obtenerFecha(txtFechaInicio);
+        LocalDate fin = obtenerFecha(txtFechaFin);
+
+        if (inicio == null || fin == null) return; // Si hay error, detener método
+
+        // Si la tabla tenía datos viejos, los limpiamos
+        DefaultTableModel modelo = (DefaultTableModel) tblIngresos.getModel();
+        modelo.setRowCount(0);
+
+        double totalHab = 0;   // Acumula ingresos por habitaciones
+        double totalServ = 0;  // Acumula ingresos por servicios
+
+        // Recorremos cada comprobante generado por el hotel
+        for (Comprobante f : Hotel.listaComprobantes) {
+
+            // Convertimos LocalDateTime (fecha completa) -> LocalDate (solo día)
+            LocalDate fechaFactura = f.getFecha()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+
+            // Validamos que la fecha esté dentro del rango solicitado
+            if (!fechaFactura.isBefore(inicio) && !fechaFactura.isAfter(fin)) {
+
+                // Cargar fila en la tabla
+                modelo.addRow(new Object[]{
+                        fechaFactura.toString(),
+                        f.getHuesped().getNombres() + " " + f.getHuesped().getApellidos(),
+                        f.getHabitacion().getNumeroHabitacion(),
+                        f.getMontoHabitacion(),
+                        f.getMontoServicios()
+                });
+
+                // Sumar totales
+                totalHab += f.getMontoHabitacion();
+                totalServ += f.getMontoServicios();
+            }
+        }
+
+        // Mostrar montos en los textfields
+        txtTotalHabitaciones.setText(String.valueOf(totalHab));
+        txtTotalServicios.setText(String.valueOf(totalServ));
+        txtTotalGeneral.setText(String.valueOf(totalHab + totalServ));
     }
-}
+
+    // ===============================================================
+    // ==========   VALIDAR Y OBTENER UNA FECHA DESDE INPUT ==========
+    // ===============================================================
+
+    /**
+     * Convierte el texto de un campo en LocalDate.
+     * Si el formato es incorrecto, muestra un error.
+     */
+    private LocalDate obtenerFecha(JTextField campo) {
+        try {
+
+            return LocalDate.parse(campo.getText().trim());
+
+        } catch (Exception e) {
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Fecha inválida: " + campo.getText() + "\nFormato correcto: AAAA-MM-DD",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            campo.requestFocus();  // Regresa el cursor al campo incorrecto
+            return null;           // Indica error
+        }
+    }
 
 
     

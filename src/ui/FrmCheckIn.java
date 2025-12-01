@@ -1,10 +1,10 @@
-
-package ui;
+package ui; // Paquete donde está el formulario
 
 import javax.swing.JOptionPane;
 import hotel.Hotel;
 import hotel.Habitacion;
 import hotel.TipoHabitacion;
+
 import operaciones.Estadia;
 import operaciones.Huesped;
 import operaciones.Reservacion;
@@ -12,17 +12,27 @@ import operaciones.Reservacion;
 import javax.swing.*;
 import java.time.LocalDate;
 
+// Este formulario gestiona el Check-In:
+// 1. Busca una reservación activa por DNI
+// 2. Muestra los datos
+// 3. Lista habitaciones disponibles según el tipo reservado
+// 4. Permite asignar una habitación y crear una estadía
 public class FrmCheckIn extends javax.swing.JPanel {
 
     public FrmCheckIn() {
-        initComponents();
+        initComponents(); // Carga el diseño desde NetBeans
+
+        // Evento al cambiar la habitación seleccionada
         cmbHabitacionDisponible.addActionListener(e -> {
-    String hab = (String) cmbHabitacionDisponible.getSelectedItem();
-    if (hab != null) {
-        lblNumeroHabitacion.setText("Habitación seleccionada: " + hab);
+
+            String hab = (String) cmbHabitacionDisponible.getSelectedItem();
+
+            if (hab != null) {
+                lblNumeroHabitacion.setText("Habitación seleccionada: " + hab);
+            }
+        });
     }
-});
-    }
+
 
    
     @SuppressWarnings("unchecked")
@@ -181,115 +191,132 @@ public class FrmCheckIn extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarReservacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarReservacionActionPerformed
-         String dni = txtDNI.getText().trim();
-    if (dni.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Ingrese el DNI para buscar.");
-        return;
-    }
+         String dni = txtDNI.getText().trim(); // Obtener DNI ingresado
 
-    Reservacion res = null;
-
-    // Buscar reservación activa por DNI
-    for (Reservacion r : Hotel.listaReservaciones) {
-        if (r.getHuesped().getDni().equals(dni)) {
-            res = r;
-            break;
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el DNI para buscar.");
+            return;
         }
-    }
 
-    if (res == null) {
-        JOptionPane.showMessageDialog(this, "No existe una reservación con ese DNI.");
-        return;
-    }
+        Reservacion res = null;
 
-    // Mostrar información
-    lblNombre.setText(res.getHuesped().getNombres() + " " + res.getHuesped().getApellidos());
-    lblTipo.setText(res.getTipo().getNombre());
-    lblInicio.setText(res.getFechaInicio().toString());
-    lblFin.setText(res.getFechaFin().toString());
-    lblPrecioNoche.setText("Precio por noche: S/ " + res.getPrecioPorNoche());
-
-    // Llenar habitaciones disponibles
-    cmbHabitacionDisponible.removeAllItems();
-
-    for (Habitacion h : Hotel.listaHabitaciones) {
-        if (h.getTipoHabitacion().equals(res.getTipo())
-            && h.getEstado().equalsIgnoreCase("Disponible")) {
-
-            cmbHabitacionDisponible.addItem(String.valueOf(h.getNumeroHabitacion()));
+        // Buscar reservación activa según DNI
+        for (Reservacion r : Hotel.listaReservaciones) {
+            if (r.getHuesped().getDni().equals(dni)) {
+                res = r;
+                break;
+            }
         }
-    }
 
-    if (cmbHabitacionDisponible.getItemCount() == 0) {
-        JOptionPane.showMessageDialog(this, "No hay habitaciones disponibles para el tipo reservado.");
-    }        // TODO add your handling code here:
+        // Si no existe reservación, mensaje y detener
+        if (res == null) {
+            JOptionPane.showMessageDialog(this, "No existe una reservación con ese DNI.");
+            return;
+        }
+
+        // Mostrar datos del huésped y fechas
+        lblNombre.setText(res.getHuesped().getNombres() + " " + res.getHuesped().getApellidos());
+        lblTipo.setText(res.getTipo().getNombre());
+        lblInicio.setText(res.getFechaInicio().toString());
+        lblFin.setText(res.getFechaFin().toString());
+        lblPrecioNoche.setText("Precio por noche: S/ " + res.getPrecioPorNoche());
+
+        // Cargar habitaciones disponibles del tipo reservado
+        cmbHabitacionDisponible.removeAllItems();
+
+        for (Habitacion h : Hotel.listaHabitaciones) {
+
+            boolean mismoTipo = h.getTipoHabitacion().equals(res.getTipo());
+            boolean disponible = h.getEstado().equalsIgnoreCase("Disponible");
+
+            if (mismoTipo && disponible) {
+                cmbHabitacionDisponible.addItem(String.valueOf(h.getNumeroHabitacion()));
+            }
+        }
+
+        // Si no hay habitaciones
+        if (cmbHabitacionDisponible.getItemCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "No hay habitaciones disponibles para el tipo reservado.");
+        }
     }//GEN-LAST:event_btnBuscarReservacionActionPerformed
 
     private void btnCheckInActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckInActionPerformed
-                    String dni = txtDNI.getText().trim();
+        String dni = txtDNI.getText().trim();
 
-    if (dni.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Busque una reservación primero.");
-        return;
-    }
-
-    // Buscar reservación del huésped
-    Reservacion res = null;
-    for (Reservacion r : Hotel.listaReservaciones) {
-        if (r.getHuesped().getDni().equals(dni)) {
-            res = r;
-            break;
+        if (dni.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Busque una reservación primero.");
+            return;
         }
-    }
 
-    if (res == null) {
-        JOptionPane.showMessageDialog(this, "No se encontró la reservación.");
-        return;
-    }
-
-    // VALIDACIÓN NUEVA: Revisar si ya tiene una estadía activa
-    for (Estadia e : Hotel.listaEstadias) {
-        if (e.getReservacion().getHuesped().getDni().equals(dni)
-            && e.getHoraCheckOut() == null) {
-
-            JOptionPane.showMessageDialog(this,
-                "El huésped ya tiene una estadía activa en la habitación "
-                + e.getHabitacionAsignada().getNumeroHabitacion()
-                + ". Debe realizar Check-Out antes de un nuevo Check-In.");
-
-            return; // BLOQUEA EL NUEVO CHECK-IN
+        // Buscar la reservación
+        Reservacion res = null;
+        for (Reservacion r : Hotel.listaReservaciones) {
+            if (r.getHuesped().getDni().equals(dni)) {
+                res = r;
+                break;
+            }
         }
-    }
 
-    // Validar habitación seleccionada
-    if (cmbHabitacionDisponible.getItemCount() == 0) {
-        JOptionPane.showMessageDialog(this, "No hay habitación seleccionada.");
-        return;
-    }
-
-    int numeroHab = Integer.parseInt(cmbHabitacionDisponible.getSelectedItem().toString());
-
-    Habitacion hab = null;
-    for (Habitacion h : Hotel.listaHabitaciones) {
-        if (h.getNumeroHabitacion() == numeroHab) {
-            hab = h;
-            break;
+        if (res == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró la reservación.");
+            return;
         }
-    }
 
-    if (hab == null) {
-        JOptionPane.showMessageDialog(this, "Error al asignar habitación.");
-        return;
-    }
+        // ==========================================================
+        // Validación: El huésped NO puede tener otra estadía activa
+        // ==========================================================
+        for (Estadia e : Hotel.listaEstadias) {
 
-    // Crear la estadía (ya validado que no hay otra activa)
-    Estadia est = new Estadia(res, 20);
-    est.setHabitacionAsignada(hab);
-    est.realizarCheckIn();
-    Hotel.listaEstadias.add(est);
+            boolean mismoHuesped = e.getReservacion().getHuesped().getDni().equals(dni);
+            boolean sigueDentro = e.getHoraCheckOut() == null;
 
-    JOptionPane.showMessageDialog(this,
-        "Check-In realizado correctamente.\nHabitación: " + numeroHab);
+            if (mismoHuesped && sigueDentro) {
+                JOptionPane.showMessageDialog(this,
+                        "El huésped ya tiene una estadía activa en la habitación "
+                                + e.getHabitacionAsignada().getNumeroHabitacion()
+                                + ". Debe realizar Check-Out antes de un nuevo Check-In.");
+                return;
+            }
+        }
+
+        // Validar que el combo tenga habitaciones
+        if (cmbHabitacionDisponible.getItemCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No hay habitación seleccionada.");
+            return;
+        }
+
+        // Obtener número de habitación seleccionada
+        int numeroHab = Integer.parseInt(
+                cmbHabitacionDisponible.getSelectedItem().toString()
+        );
+
+        // Buscar objeto Habitación
+        Habitacion hab = null;
+        for (Habitacion h : Hotel.listaHabitaciones) {
+            if (h.getNumeroHabitacion() == numeroHab) {
+                hab = h;
+                break;
+            }
+        }
+
+        if (hab == null) {
+            JOptionPane.showMessageDialog(this, "Error al asignar habitación.");
+            return;
+        }
+
+        // ==========================================================
+        // Crear estadía y efectuar Check-In
+        // ==========================================================
+        Estadia est = new Estadia(res, 20); // 20 = costo por hora extra (ejemplo)
+        est.setHabitacionAsignada(hab);
+        est.realizarCheckIn();
+
+        // Registrar la estadía en el hotel
+        Hotel.listaEstadias.add(est);
+
+        JOptionPane.showMessageDialog(this,
+                "Check-In realizado correctamente.\nHabitación: " + numeroHab);            
     }//GEN-LAST:event_btnCheckInActionPerformed
 
 

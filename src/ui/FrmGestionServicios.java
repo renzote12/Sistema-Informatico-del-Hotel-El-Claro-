@@ -1,34 +1,46 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package ui;
+
 import hotel.Hotel;
 import operaciones.ServicioAdicional;
+
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 public class FrmGestionServicios extends javax.swing.JPanel {
 
-    /**
-     * Creates new form FrmGestionServicios
-     */
+    // ============================================================
+    // CONSTRUCTOR DEL PANEL
+    // ============================================================
     public FrmGestionServicios() {
-        initComponents();
-        cargarTabla();
+        initComponents();  // Inicializa interfaz creada en NetBeans
+        cargarTabla();     // Llena la tabla con los servicios existentes
     }
-private void cargarTabla() {
-        DefaultTableModel modelo = (DefaultTableModel) tblServicios.getModel();
-        modelo.setRowCount(0);
 
+    // ============================================================
+    // MÉTODO QUE CARGA TODOS LOS SERVICIOS EN LA TABLA VISUAL
+    // ============================================================
+    private void cargarTabla() {
+
+        // Modelo del JTable donde se mostrarán los datos
+        DefaultTableModel modelo = (DefaultTableModel) tblServicios.getModel();
+
+        modelo.setRowCount(0); // Limpia la tabla antes de volver a llenarla
+
+        // Recorremos la lista de servicios guardados en el sistema
         for (ServicioAdicional s : Hotel.listaServicios) {
+
+            // Se agrega una fila con nombre y precio
             modelo.addRow(new Object[]{
                 s.getNombre(),
                 s.getPrecio()
             });
         }
     }
+
+    // ============================================================
+    // MÉTODO QUE LIMPIA LOS CAMPOS DE TEXTO
+    // ============================================================
     private void limpiarCampos() {
         txtNombreServicio.setText("");
         txtPrecioServicio.setText("");
@@ -174,12 +186,13 @@ private void cargarTabla() {
       String nombre = txtNombreServicio.getText().trim();
         String precioTxt = txtPrecioServicio.getText().trim();
 
+        // Validar campos vacíos
         if (nombre.isEmpty() || precioTxt.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Complete todos los campos.");
             return;
         }
 
-        // Validar precio numérico
+        // Validar que el precio sea numérico
         double precio;
         try {
             precio = Double.parseDouble(precioTxt);
@@ -188,67 +201,82 @@ private void cargarTabla() {
             return;
         }
 
-        // Verificar duplicado
+        // Verificar que no exista otro servicio con el mismo nombre
         for (ServicioAdicional s : Hotel.listaServicios) {
             if (s.getNombre().equalsIgnoreCase(nombre)) {
-                JOptionPane.showMessageDialog(this, "Ya existe un servicio con ese nombre.");
+                JOptionPane.showMessageDialog(this,
+                        "Ya existe un servicio con ese nombre.");
                 return;
             }
         }
 
-        // Registrar
+        // Agregar el nuevo servicio a la lista
         Hotel.listaServicios.add(new ServicioAdicional(nombre, precio));
 
-        JOptionPane.showMessageDialog(this, "Servicio registrado correctamente.");
+        JOptionPane.showMessageDialog(this,
+                "Servicio registrado correctamente.");
 
-        cargarTabla();
-        limpiarCampos();
-                // TODO add your handling code here:
+        cargarTabla();   // Recargar tabla
+        limpiarCampos(); // Limpiar campo de entrada
+    
+
+    
     }//GEN-LAST:event_btnRegistrarServicioActionPerformed
 
     private void btnModificarServicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarServicioActionPerformed
-        int fila = tblServicios.getSelectedRow();
+       int fila = tblServicios.getSelectedRow();
 
+        // Validar que se haya seleccionado una fila
         if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un servicio de la tabla.");
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione un servicio de la tabla.");
             return;
         }
 
+        // Obtener datos de entrada
         String nombre = txtNombreServicio.getText().trim();
         String precioTxt = txtPrecioServicio.getText().trim();
 
         if (nombre.isEmpty() || precioTxt.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Complete todos los campos.");
+            JOptionPane.showMessageDialog(this,
+                    "Complete todos los campos.");
             return;
         }
 
+        // Validar precio
         double precio;
         try {
             precio = Double.parseDouble(precioTxt);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Precio inválido.");
+            JOptionPane.showMessageDialog(this,
+                    "Precio inválido.");
             return;
         }
 
+        // Obtener el servicio de la lista según la fila seleccionada
         ServicioAdicional s = Hotel.listaServicios.get(fila);
+
+        // Modificar los atributos
         s.setNombre(nombre);
         s.setPrecio(precio);
 
-        JOptionPane.showMessageDialog(this, "Servicio modificado correctamente.");
+        JOptionPane.showMessageDialog(this,
+                "Servicio modificado correctamente.");
 
         cargarTabla();
         limpiarCampos();
-       // TODO add your handling code here:
     }//GEN-LAST:event_btnModificarServicioActionPerformed
 
     private void btnEliminarServicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarServicioActionPerformed
-      int fila = tblServicios.getSelectedRow();
+     int fila = tblServicios.getSelectedRow();
 
         if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un servicio para eliminar.");
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione un servicio para eliminar.");
             return;
         }
 
+        // Confirmación del usuario
         int r = JOptionPane.showConfirmDialog(this,
                 "¿Eliminar servicio?",
                 "Confirmar",
@@ -256,12 +284,14 @@ private void cargarTabla() {
 
         if (r != JOptionPane.YES_OPTION) return;
 
+        // Eliminar el servicio de la lista
         Hotel.listaServicios.remove(fila);
 
-        JOptionPane.showMessageDialog(this, "Servicio eliminado.");
+        JOptionPane.showMessageDialog(this,
+                "Servicio eliminado.");
 
         cargarTabla();
-        limpiarCampos();        // TODO add your handling code here:
+        limpiarCampos();    // TODO add your handling code here:
     }//GEN-LAST:event_btnEliminarServicioActionPerformed
 
 
