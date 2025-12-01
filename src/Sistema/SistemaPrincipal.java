@@ -8,7 +8,7 @@ import rrhh.*;
 import hotel.*;
 import operaciones.*;
 import ui.LoginFrame;
-
+//gaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 public class SistemaPrincipal {
 
     // =====================================================
